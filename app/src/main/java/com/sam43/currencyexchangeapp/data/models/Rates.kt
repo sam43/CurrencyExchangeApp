@@ -27,8 +27,8 @@ data class Rates(
     val aZN: Double? = 0.0,
     @SerializedName("BAM")
     val bAM: Double? = 0.0,
-    @SerializedName("BBD")
-    val bBD: Int? = 0,
+//    @SerializedName("BBD")
+//    val bBD: Int? = 0,
     @SerializedName("BDT")
     val bDT: Double? = 0.0,
     @SerializedName("BGN")
@@ -45,8 +45,8 @@ data class Rates(
     val bOB: Double? = 0.0,
     @SerializedName("BRL")
     val bRL: Double? = 0.0,
-    @SerializedName("BSD")
-    val bSD: Int? = 0,
+//    @SerializedName("BSD")
+//    val bSD: Int? = 0,
     @SerializedName("BTC")
     val bTC: Double? = 0.0,
     @SerializedName("BTN")
@@ -75,8 +75,8 @@ data class Rates(
     val cOP: Double? = 0.0,
     @SerializedName("CRC")
     val cRC: Double? = 0.0,
-    @SerializedName("CUC")
-    val cUC: Int? = 0,
+//    @SerializedName("CUC")
+//    val cUC: Int? = 0,
     @SerializedName("CUP")
     val cUP: Double? = 0.0,
     @SerializedName("CVE")
@@ -131,8 +131,8 @@ data class Rates(
     val hTG: Double? = 0.0,
     @SerializedName("HUF")
     val hUF: Double? = 0.0,
-    @SerializedName("IDR")
-    val iDR: Int? = 0,
+//    @SerializedName("IDR")
+//    val iDR: Int? = 0,
     @SerializedName("ILS")
     val iLS: Double? = 0.0,
     @SerializedName("IMP")
@@ -141,8 +141,8 @@ data class Rates(
     val iNR: Double? = 0.0,
     @SerializedName("IQD")
     val iQD: Double? = 0.0,
-    @SerializedName("IRR")
-    val iRR: Int? = 0,
+//    @SerializedName("IRR")
+//    val iRR: Int? = 0,
     @SerializedName("ISK")
     val iSK: Double? = 0.0,
     @SerializedName("JEP")
@@ -161,8 +161,8 @@ data class Rates(
     val kHR: Double? = 0.0,
     @SerializedName("KMF")
     val kMF: Double? = 0.0,
-    @SerializedName("KPW")
-    val kPW: Int? = 0,
+//    @SerializedName("KPW")
+//    val kPW: Int? = 0,
     @SerializedName("KRW")
     val kRW: Double? = 0.0,
     @SerializedName("KWD")
@@ -225,8 +225,8 @@ data class Rates(
     val nZD: Double? = 0.0,
     @SerializedName("OMR")
     val oMR: Double? = 0.0,
-    @SerializedName("PAB")
-    val pAB: Int? = 0,
+//    @SerializedName("PAB")
+//    val pAB: Int? = 0,
     @SerializedName("PEN")
     val pEN: Double? = 0.0,
     @SerializedName("PGK")
@@ -297,22 +297,22 @@ data class Rates(
     val tTD: Double? = 0.0,
     @SerializedName("TWD")
     val tWD: Double? = 0.0,
-    @SerializedName("TZS")
-    val tZS: Int? = 0,
+//    @SerializedName("TZS")
+//    val tZS: Int? = 0,
     @SerializedName("UAH")
     val uAH: Double? = 0.0,
     @SerializedName("UGX")
     val uGX: Double? = 0.0,
-    @SerializedName("USD")
-    val uSD: Int? = 0,
+//    @SerializedName("USD")
+//    val uSD: Int? = 0,
     @SerializedName("UYU")
     val uYU: Double? = 0.0,
     @SerializedName("UZS")
     val uZS: Double? = 0.0,
     @SerializedName("VES")
     val vES: Double? = 0.0,
-    @SerializedName("VND")
-    val vND: Int? = 0,
+//    @SerializedName("VND")
+//    val vND: Int? = 0,
     @SerializedName("VUV")
     val vUV: Double? = 0.0,
     @SerializedName("WST")
@@ -340,7 +340,7 @@ data class Rates(
     @SerializedName("ZAR")
     val zAR: Double? = 0.0,
     @SerializedName("ZMW")
-    val zMW: Double? = 0.0,
-    @SerializedName("ZWL")
-    val zWL: Int? = 0
+    val zMW: Double? = 0.0
+//    @SerializedName("ZWL")
+//    val zWL: Double? = 0.0
 )
