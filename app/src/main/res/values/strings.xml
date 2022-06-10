@@ -2,6 +2,7 @@
     <string name="app_name">CurrencyExchangeApp</string>
     <string name="title">Currency Converter</string>
     <string-array name="currency_codes">
+        <item>USD</item>
         <item>AED</item>
         <item>AFN</item>
         <item>ALL</item>
@@ -13,7 +14,7 @@
         <item>AWG</item>
         <item>AZN</item>
         <item>BAM</item>
-        <item>BBD</item>
+<!--        <item>BBD</item>-->
         <item>BDT</item>
         <item>BGN</item>
         <item>BHD</item>
@@ -22,7 +23,7 @@
         <item>BND</item>
         <item>BOB</item>
         <item>BRL</item>
-        <item>BSD</item>
+<!--        <item>BSD</item>-->
         <item>BTC</item>
         <item>BTN</item>
         <item>BWP</item>
@@ -37,7 +38,7 @@
         <item>CNY</item>
         <item>COP</item>
         <item>CRC</item>
-        <item>CUC</item>
+<!--        <item>CUC</item>-->
         <item>CUP</item>
         <item>CVE</item>
         <item>CZK</item>
@@ -65,12 +66,12 @@
         <item>HRK</item>
         <item>HTG</item>
         <item>HUF</item>
-        <item>IDR</item>
+<!--        <item>IDR</item>-->
         <item>ILS</item>
         <item>IMP</item>
         <item>INR</item>
         <item>IQD</item>
-        <item>IRR</item>
+<!--        <item>IRR</item>-->
         <item>ISK</item>
         <item>JEP</item>
         <item>JMD</item>
@@ -80,7 +81,7 @@
         <item>KGS</item>
         <item>KHR</item>
         <item>KMF</item>
-        <item>KPW</item>
+<!--        <item>KPW</item>-->
         <item>KRW</item>
         <item>KWD</item>
         <item>KYD</item>
@@ -112,7 +113,7 @@
         <item>NPR</item>
         <item>NZD</item>
         <item>OMR</item>
-        <item>PAB</item>
+<!--        <item>PAB</item>-->
         <item>PEN</item>
         <item>PGK</item>
         <item>PHP</item>
@@ -148,14 +149,13 @@
         <item>TRY</item>
         <item>TTD</item>
         <item>TWD</item>
-        <item>TZS</item>
+<!--        <item>TZS</item>-->
         <item>UAH</item>
         <item>UGX</item>
-        <item>USD</item>
         <item>UYU</item>
         <item>UZS</item>
         <item>VES</item>
-        <item>VND</item>
+<!--        <item>VND</item>-->
         <item>VUV</item>
         <item>WST</item>
         <item>XAF</item>
@@ -170,6 +170,6 @@
         <item>YER</item>
         <item>ZAR</item>
         <item>ZMW</item>
-        <item>ZWL</item>
+<!--        <item>ZWL</item>-->
     </string-array>
 </resources>

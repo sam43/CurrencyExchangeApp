@@ -303,8 +303,8 @@ data class Rates(
     val uAH: Double? = 0.0,
     @SerializedName("UGX")
     val uGX: Double? = 0.0,
-//    @SerializedName("USD")
-//    val uSD: Int? = 0,
+    @SerializedName("USD")
+    val uSD: Int? = 0,
     @SerializedName("UYU")
     val uYU: Double? = 0.0,
     @SerializedName("UZS")
