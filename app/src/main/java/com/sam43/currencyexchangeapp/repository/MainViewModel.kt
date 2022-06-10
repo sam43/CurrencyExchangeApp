@@ -3,6 +3,7 @@ package com.sam43.currencyexchangeapp.repository
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.data.models.Rates
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
 import com.sam43.currencyexchangeapp.utils.Resource
@@ -23,6 +24,7 @@ class MainViewModel @Inject constructor(
 
     sealed class CurrencyEvent {
         class Success(val resultText: String): CurrencyEvent()
+        class SuccessResponse(val response: CurrencyResponse?): CurrencyEvent()
         class Failure(val errorText: String): CurrencyEvent()
         object Loading : CurrencyEvent()
         object Empty : CurrencyEvent()
@@ -34,8 +36,7 @@ class MainViewModel @Inject constructor(
 
     fun convert(
         amountStr: String,
-        fromCurrency: String,
-        toCurrency: String
+        fromCurrency: String
     ) {
         val fromAmount = amountStr.toFloatOrNull()
         if(fromAmount == null) {
@@ -45,23 +46,25 @@ class MainViewModel @Inject constructor(
 
         viewModelScope.launch(dispatchers.io) {
             _conversion.value = CurrencyEvent.Loading
-            when(val ratesResponse = repository.getRates()) {
+            when(val ratesResponse = repository.getRates(fromCurrency/*option to set custom 'base' currency param (need subscription for this)*/)) {
                 is Resource.Error -> _conversion.value =
                     CurrencyEvent.Failure(ratesResponse.message!!)
-                is Resource.Success -> {
-                    val rates = ratesResponse.data?.rates
-                    //val rate = ratesResponse.data?.response
-                    val rate = rates?.let { getRateForCurrency(toCurrency, it) }
-                    if(rate == null) {
-                        _conversion.value = CurrencyEvent.Failure("Unexpected error")
-                    } else {
-                        //_conversion.value = CurrencyEvent.Success(rate.toString())
-                        val convertedCurrency = round(fromAmount.toDouble() * parseDouble(rate.toString()) * 100) / 100
-                        _conversion.value = CurrencyEvent.Success(
-                            "$fromAmount $fromCurrency = $convertedCurrency $toCurrency"
-                        )
-                    }
-                }
+                is Resource.Success -> _conversion.value =
+                    CurrencyEvent.SuccessResponse(ratesResponse.data)
+//                is Resource.Success -> {
+//                    val rates = ratesResponse.data?.rates
+//                    //val rate = ratesResponse.data?.response
+//                    val rate = rates?.let { getRateForCurrency(toCurrency, it) }
+//                    if(rate == null) {
+//                        _conversion.value = CurrencyEvent.Failure("Unexpected error")
+//                    } else {
+//                        //_conversion.value = CurrencyEvent.Success(rate.toString())
+//                        val convertedCurrency = round(fromAmount.toDouble() * parseDouble(rate.toString()) * 100) / 100
+//                        _conversion.value = CurrencyEvent.Success(
+//                            "$fromAmount $fromCurrency = $convertedCurrency $toCurrency"
+//                        )
+//                    }
+//                }
             }
         }
     }

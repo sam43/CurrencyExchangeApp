@@ -11,9 +11,9 @@ class DefaultMainRepository @Inject constructor(
     private val api: CurrencyApi
 ) : MainRepository {
 
-    override suspend fun getRates(): Resource<CurrencyResponse> {
+    override suspend fun getRates(base: String?): Resource<CurrencyResponse> {
         return try {
-            val response = api.getRates(BuildConfig.APP_ID)
+            val response = api.getRates(base.toString())
             val result = response.body()
             if(response.isSuccessful && result != null) {
                 Resource.Success(result)
@@ -31,7 +31,7 @@ class DefaultMainRepository @Inject constructor(
         toCurrency: String
     ): Resource<ConversionResponse> {
         return try {
-            val response = api.convertCurrency(amountStr, fromCurrency, toCurrency, "f5a33ff1b1ed46538350b0d47b1b374d")
+            val response = api.convertCurrency(amountStr, fromCurrency, toCurrency)
             val result = response.body()
             if(response.isSuccessful && result != null) {
                 Resource.Success(result)

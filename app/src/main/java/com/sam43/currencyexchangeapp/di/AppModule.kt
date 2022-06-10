@@ -40,16 +40,31 @@ object AppModule {
     fun provideOkHttpClient(
         loggingInterceptor: HttpLoggingInterceptor,
         okHttpProfilerInterceptor: OkHttpProfilerInterceptor,
+        headerInterceptor: Interceptor,
     ): OkHttpClient {
         val okHttpClientBuilder = OkHttpClient().newBuilder()
         okHttpClientBuilder.connectTimeout(30L, TimeUnit.SECONDS)
         okHttpClientBuilder.readTimeout(30L, TimeUnit.SECONDS)
         okHttpClientBuilder.writeTimeout(30L, TimeUnit.SECONDS)
+        okHttpClientBuilder.addInterceptor(headerInterceptor)
         if (BuildConfig.DEBUG) {
             okHttpClientBuilder.addInterceptor(loggingInterceptor)
             okHttpClientBuilder.addInterceptor(okHttpProfilerInterceptor)
         }
         return okHttpClientBuilder.build()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideHeaderInterceptor(): Interceptor {
+        return Interceptor {
+            val requestBuilder = it.request().newBuilder()
+            //hear you can add all headers you want by calling 'requestBuilder.addHeader(name ,  value)'
+            it.proceed(requestBuilder
+                .addHeader("Authorization", "Token ${BuildConfig.APP_ID}")
+                .build())
+        }
     }
 
     @Provides

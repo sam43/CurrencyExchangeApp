@@ -10,5 +10,5 @@ data class CurrencyResponse(
     @SerializedName("rates")
     val rates: Rates? = Rates(),
     @SerializedName("timestamp")
-    val timestamp: Int? = 0
+    val timestamp: Long? = 0L
 )

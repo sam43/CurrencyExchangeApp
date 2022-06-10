@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingHorizontal="32dp"
-    tools:context=".ui.MainActivity">
+    android:paddingHorizontal="16dp"
+    tools:context=".ui.MainActivity"
+    tools:ignore="HardcodedText">
 
     <TextView
         android:id="@+id/tvTitle"
@@ -29,21 +30,13 @@
         app:layout_constraintStart_toStartOf="@+id/spFromCurrency"
         app:layout_constraintTop_toTopOf="@+id/guideline" />
 
-    <TextView
-        android:id="@+id/tvTo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="To"
-        app:layout_constraintStart_toStartOf="@+id/spToCurrency"
-        app:layout_constraintTop_toTopOf="@+id/guideline" />
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilFrom"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:hint="Amount"
-        android:layout_marginEnd="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/spFromCurrency"
         app:layout_constraintEnd_toStartOf="@+id/spFromCurrency"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,57 +55,65 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.14" />
+        app:layout_constraintGuide_percent="0.18" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.39" />
 
     <Spinner
         android:id="@+id/spFromCurrency"
-        android:layout_width="wrap_content"
+        android:layout_width="99dp"
         android:layout_height="wrap_content"
         android:entries="@array/currency_codes"
         android:padding="15dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/spToCurrency"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvFrom" />
-
-    <Spinner
-        android:id="@+id/spToCurrency"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:entries="@array/currency_codes"
-        android:padding="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTo" />
-
-    <Button
-        android:id="@+id/btnConvert"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Convert"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spToCurrency" />
 
     <TextView
         android:id="@+id/tvResult"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:padding="4dp"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/btnConvert"
-        app:layout_constraintEnd_toStartOf="@+id/btnConvert"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnConvert"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/tilFrom"
+        app:layout_constraintStart_toStartOf="@+id/tilFrom"
+        app:layout_constraintTop_toBottomOf="@+id/tilFrom"
         tools:text="10 EUR = 15.0 USD" />
 
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/btnConvert"
-        app:layout_constraintEnd_toStartOf="@+id/btnConvert"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnConvert"
+        app:layout_constraintBottom_toBottomOf="@+id/rvGridView"
+        app:layout_constraintEnd_toEndOf="@+id/rvGridView"
+        app:layout_constraintStart_toStartOf="@+id/rvGridView"
+        app:layout_constraintTop_toTopOf="@+id/rvGridView"
         tools:visibility="visible" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvGridView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:horizontalSpacing="5dp"
+        android:numColumns="3"
+        android:padding="5dp"
+        android:verticalSpacing="5dp"
+        android:layout_marginBottom="16dp"
+        android:scrollIndicators="none"
+        tools:itemCount="20"
+        tools:listitem="@layout/item_currency_info"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline1"
+        tools:targetApi="m" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

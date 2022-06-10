@@ -10,14 +10,13 @@ import retrofit2.http.Query
 interface CurrencyApi {
     @GET("latest.json")
     suspend fun getRates(
-        @Query("app_id") appId: String
+        @Query("base") base: String
     ): Response<CurrencyResponse>
 
     // Historic data of 2022-05-24
     @GET("historical/{date}.json") // date format : YYYY-MM-DD
     suspend fun getRatesByDate(
-        @Path("date") date: String,
-        @Query("app_id") appId: String
+        @Path("date") date: String
     ): Response<CurrencyResponse>
 
     // Currency exchange using server
@@ -27,8 +26,7 @@ interface CurrencyApi {
     suspend fun convertCurrency(
         @Path("amount") amount: String,
         @Path("from") from: String,
-        @Path("to") to: String,
-        @Query("app_id") appId: String
+        @Path("to") to: String
     ): Response<ConversionResponse>
 
 }
