@@ -1,6 +1,5 @@
 package com.sam43.currencyexchangeapp.repository
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
@@ -11,10 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.lang.Double.parseDouble
-import java.lang.NumberFormatException
 import javax.inject.Inject
-import kotlin.math.round
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -36,7 +32,7 @@ class MainViewModel @Inject constructor(
 
     fun convert(
         amountStr: String,
-        fromCurrency: String
+        fromCurrency: String? = "USD"
     ) {
         val fromAmount = amountStr.toFloatOrNull()
         if(fromAmount == null) {
@@ -51,20 +47,6 @@ class MainViewModel @Inject constructor(
                     CurrencyEvent.Failure(ratesResponse.message!!)
                 is Resource.Success -> _conversion.value =
                     CurrencyEvent.SuccessResponse(ratesResponse.data)
-//                is Resource.Success -> {
-//                    val rates = ratesResponse.data?.rates
-//                    //val rate = ratesResponse.data?.response
-//                    val rate = rates?.let { getRateForCurrency(toCurrency, it) }
-//                    if(rate == null) {
-//                        _conversion.value = CurrencyEvent.Failure("Unexpected error")
-//                    } else {
-//                        //_conversion.value = CurrencyEvent.Success(rate.toString())
-//                        val convertedCurrency = round(fromAmount.toDouble() * parseDouble(rate.toString()) * 100) / 100
-//                        _conversion.value = CurrencyEvent.Success(
-//                            "$fromAmount $fromCurrency = $convertedCurrency $toCurrency"
-//                        )
-//                    }
-//                }
             }
         }
     }

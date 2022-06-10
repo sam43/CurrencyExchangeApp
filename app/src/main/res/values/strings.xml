@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">CurrencyExchangeApp</string>
     <string name="title">Currency Converter</string>
-    <string name="btn_convert">Convert</string>
+    <string name="btn_convert">Update</string>
     <string-array name="currency_codes">
 <!--        <item>Select</item>-->
         <item>USD</item>

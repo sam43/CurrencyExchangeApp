@@ -28,7 +28,7 @@ class RecyclerViewAdapter(private val rates: ArrayList<CurrencyRateItem>) : Recy
         fun bind(item: CurrencyRateItem) {
             val tvCountry = itemView.findViewById<TextView>(R.id.tvCountry)
             val tvValue = itemView.findViewById<TextView>(R.id.tvRate)
-            tvCountry.text = item.country
+            tvCountry.text = item.country.toString()
             tvValue.text = item.currency.toString()
         }
     }
