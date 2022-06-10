@@ -8,11 +8,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sam43.currencyexchangeapp.R
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
+import com.sam43.currencyexchangeapp.databinding.ItemCurrencyInfoBinding
 
 class RecyclerViewAdapter(private val rates: ArrayList<CurrencyRateItem>) : RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_currency_info, parent, false)
-        return ViewHolder(view)
+        val binding = ItemCurrencyInfoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(rates[position])
@@ -24,12 +25,10 @@ class RecyclerViewAdapter(private val rates: ArrayList<CurrencyRateItem>) : Recy
     @SuppressLint("NotifyDataSetChanged")
     fun updateView() = notifyDataSetChanged()
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(private val itemCurrencyInfoBinding: ItemCurrencyInfoBinding) : RecyclerView.ViewHolder(itemCurrencyInfoBinding.root) {
         fun bind(item: CurrencyRateItem) {
-            val tvCountry = itemView.findViewById<TextView>(R.id.tvCountry)
-            val tvValue = itemView.findViewById<TextView>(R.id.tvRate)
-            tvCountry.text = item.country.toString()
-            tvValue.text = item.currency.toString()
+            itemCurrencyInfoBinding.tvCountry.text = item.country.toString()
+            itemCurrencyInfoBinding.tvRate.text = item.currency.toString()
         }
     }
 }

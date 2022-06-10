@@ -1,6 +1,7 @@
 package com.sam43.currencyexchangeapp.data.models
 
 import androidx.annotation.Keep
+import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
 
 @Keep

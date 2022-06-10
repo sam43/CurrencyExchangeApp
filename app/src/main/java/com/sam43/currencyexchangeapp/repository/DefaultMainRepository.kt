@@ -1,14 +1,18 @@
 package com.sam43.currencyexchangeapp.repository
 
 import com.sam43.currencyexchangeapp.BuildConfig
+import com.sam43.currencyexchangeapp.data.local.AppDB
 import com.sam43.currencyexchangeapp.data.models.ConversionResponse
+import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.network.CurrencyApi
 import com.sam43.currencyexchangeapp.utils.Resource
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class DefaultMainRepository @Inject constructor(
-    private val api: CurrencyApi
+    private val api: CurrencyApi,
+    private val appDB: AppDB
 ) : MainRepository {
 
     override suspend fun getRates(base: String?): Resource<CurrencyResponse> {
@@ -41,5 +45,17 @@ class DefaultMainRepository @Inject constructor(
         } catch(e: Exception) {
             Resource.Error(e.message ?: "An error occured")
         }
+    }
+
+    override fun getRatesOffline(): Flow<List<CurrencyRateItem>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getRateByCountry(country: String): CurrencyRateItem? {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun insertRateItem(rateItem: CurrencyRateItem) {
+        TODO("Not yet implemented")
     }
 }

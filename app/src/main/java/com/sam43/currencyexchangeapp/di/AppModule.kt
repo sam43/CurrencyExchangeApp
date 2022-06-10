@@ -1,10 +1,17 @@
 package com.sam43.currencyexchangeapp.di
 
+import android.app.Application
+import androidx.room.Room
 import com.localebro.okhttpprofiler.OkHttpProfilerInterceptor
 import com.sam43.currencyexchangeapp.BuildConfig
+import com.sam43.currencyexchangeapp.data.local.AppDB
 import com.sam43.currencyexchangeapp.network.CurrencyApi
 import com.sam43.currencyexchangeapp.repository.DefaultMainRepository
 import com.sam43.currencyexchangeapp.repository.MainRepository
+import com.sam43.currencyexchangeapp.usecases.AddRateItem
+import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
+import com.sam43.currencyexchangeapp.usecases.GetRateItemByCountry
+import com.sam43.currencyexchangeapp.usecases.GetRates
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
 import dagger.Module
 import dagger.Provides
@@ -12,7 +19,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -24,11 +30,31 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideNoteDatabase(app: Application): AppDB {
+        return Room.databaseBuilder(
+            app,
+            AppDB::class.java,
+            AppDB.DATABASE_NAME
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideNoteUseCases(repository: MainRepository): ConversionUseCases {
+        return ConversionUseCases(
+            getRates = GetRates(repository),
+            addRate = AddRateItem(repository),
+            getRateByCountry = GetRateItemByCountry(repository)
+        )
+    }
+
     @Singleton
     @Provides
     fun provideCurrencyApi(okHttpClient: OkHttpClient): CurrencyApi = Retrofit.Builder()
         .baseUrl(BuildConfig.BASE_URL)
-        //.baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .client(okHttpClient)
         .build()
@@ -82,7 +108,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideMainRepository(api: CurrencyApi): MainRepository = DefaultMainRepository(api)
+    fun provideMainRepository(api: CurrencyApi, db: AppDB): MainRepository = DefaultMainRepository(api, db)
 
     @Singleton
     @Provides
