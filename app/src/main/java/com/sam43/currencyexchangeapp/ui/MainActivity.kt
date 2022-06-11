@@ -18,6 +18,7 @@ import com.sam43.currencyexchangeapp.ui.adapter.RecyclerViewAdapter
 import com.sam43.currencyexchangeapp.utils.showLongToast
 import com.sam43.currencyexchangeapp.utils.to5decimalPoint
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -44,22 +45,22 @@ class MainActivity : AppCompatActivity() {
                 selectedItem = parent?.getItemAtPosition(position) as String
                 //parent.context.showLongToast("Selected Currency ${binding.etFrom.text.toString()}")
                 if (binding.etFrom.text.toString().trim().isNotEmpty())
-                    viewModel.convert(binding.etFrom.text.toString(), selectedItem)
+                    viewModel.consumeAllRatesByBase(selectedItem)
                 else
-                    viewModel.convert("1.0", selectedItem)
+                    viewModel.consumeAllRatesByBase(selectedItem)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
         binding.btnConvert.setOnClickListener {
-            viewModel.convert(binding.etFrom.text.toString())
+            viewModel.convert(binding.etFrom.text.toString(), "USD")
         }
     }
 
     private fun observeChanges() {
         lifecycleScope.launchWhenStarted {
-            viewModel.conversion.collect { event ->
+            viewModel.conversion.collectLatest { event ->
                 when(event) {
                     is MainViewModel.CurrencyEvent.SuccessResponse -> {
                         // checking because initially we will be getting result for 1 USD for conversion
@@ -75,14 +76,26 @@ class MainActivity : AppCompatActivity() {
                         binding.tvResult.isVisible = false
                         showLongToast(event.errorText)
                     }
-                    is MainViewModel.CurrencyEvent.Failure -> {
+                    is MainViewModel.CurrencyEvent.Failure -> whenFailed(event)
+                    is MainViewModel.CurrencyEvent.Loading -> whenLoading(event)
+                    else -> Log.d(
+                        TAG,
+                        "onCreate() called with: event = $event"
+                    )
+                }
+            }
+        }
+        lifecycleScope.launchWhenStarted {
+            viewModel.conversionRates.collectLatest { event ->
+                when(event) {
+                    is MainViewModel.CurrencyEvent.Loading -> whenLoading(event)
+                    is MainViewModel.CurrencyEvent.Failure -> whenFailed(event)
+                    is MainViewModel.CurrencyEvent.SuccessListResponse<*> -> {
                         binding.progressBar.isVisible = false
-                        binding.tvResult.isVisible = true
-                        binding.tvResult.setTextColor(Color.RED)
-                        binding.tvResult.text = event.errorText
-                    }
-                    is MainViewModel.CurrencyEvent.Loading -> {
-                        binding.progressBar.isVisible = true
+                        @Suppress("UNCHECKED_CAST")
+                        mAdapter = RecyclerViewAdapter(event.list as ArrayList<CurrencyRateItem>)
+                        binding.rvGridView.adapter = mAdapter
+                        mAdapter.updateView()
                         binding.tvResult.isVisible = false
                     }
                     else -> Log.d(
@@ -92,6 +105,18 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun whenFailed(event: MainViewModel.CurrencyEvent.Failure) {
+        binding.progressBar.isVisible = false
+        binding.tvResult.isVisible = true
+        binding.tvResult.setTextColor(Color.RED)
+        binding.tvResult.text = event.errorText
+    }
+
+    private fun whenLoading(event: MainViewModel.CurrencyEvent.Loading) {
+        binding.progressBar.isVisible = true
+        binding.tvResult.isVisible = false
     }
 
     private fun getRatesAsList(rates: Rates, amount: Double): MutableList<CurrencyRateItem> {

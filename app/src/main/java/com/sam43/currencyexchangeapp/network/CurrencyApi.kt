@@ -21,9 +21,9 @@ interface CurrencyApi {
     ): Response<CurrencyResponseDto>
 
     // Currency exchange using server
-    // From doc: The /convert API is offered to save time in integration,
+    // From doc: The /consumeAllRatesByBase API is offered to save time in integration,
     // but does not imply any difference in accuracy, validity or fitness for purpose from the data that can be obtained with any other API request.
-//    @GET("convert/{amount}/{from}/{to}")
+//    @GET("consumeAllRatesByBase/{amount}/{from}/{to}")
 //    suspend fun convertCurrency(
 //        @Path("amount") amount: String,
 //        @Path("from") from: String,

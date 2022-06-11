@@ -4,7 +4,6 @@ import com.sam43.currencyexchangeapp.data.local.RateDao
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.data.models.Rates
-import com.sam43.currencyexchangeapp.data.remote.CurrencyResponseDto
 import com.sam43.currencyexchangeapp.network.CurrencyApi
 import com.sam43.currencyexchangeapp.utils.Resource
 import com.sam43.currencyexchangeapp.utils.to5decimalPoint
@@ -40,8 +39,27 @@ class DefaultMainRepository @Inject constructor(
             }
         }
 
-    private fun getRatesAsList(rates: Rates, amount: Double? = 1.0): MutableList<CurrencyRateItem> {
-        return mutableListOf(CurrencyRateItem(country = "CAD", currency = (amount!! * rates.cAD!!).to5decimalPoint()),
+    override suspend fun getConvertedRates(
+        amountStr: String,
+        base: String
+    ): Flow<Resource<MutableList<CurrencyRateItem>>> =
+        flow {
+            emit(Resource.Loading())
+            try {
+                val rates = dao.getRatesOffline().rates
+                val rateList = rates?.let { getRatesAsList(it, amountStr.toDouble(), base) }
+                emit(Resource.Success(data = rateList!!))
+            } catch (e: Exception) {
+                emit(Resource.Error(e.message.toString()))
+            }
+        }
+
+    private fun getRatesAsList(rates: Rates, amount: Double? = 1.0, base: String): MutableList<CurrencyRateItem> {
+        return mutableListOf(
+            CurrencyRateItem(
+                country = "CAD",
+                currency = (amount!! * rates.cAD!!).to5decimalPoint()
+            ),
             CurrencyRateItem(country = "HKD", currency = (amount * rates.hKD!!).to5decimalPoint()),
             CurrencyRateItem(country = "ISK", currency = (amount * rates.iSK!!).to5decimalPoint()),
             CurrencyRateItem(country = "BDT", currency = (amount * rates.bDT!!).to5decimalPoint()),
@@ -52,6 +70,7 @@ class DefaultMainRepository @Inject constructor(
             CurrencyRateItem(country = "CZK", currency = (amount * rates.cZK!!).to5decimalPoint()),
             CurrencyRateItem(country = "AUD", currency = (amount * rates.aUD!!).to5decimalPoint()),
             CurrencyRateItem(country = "RON", currency = (amount * rates.rON!!).to5decimalPoint()),
-            CurrencyRateItem(country = "SEK", currency = (amount * rates.sEK!!).to5decimalPoint()))
+            CurrencyRateItem(country = "SEK", currency = (amount * rates.sEK!!).to5decimalPoint())
+        )
     }
 }
