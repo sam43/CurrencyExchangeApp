@@ -1,6 +1,5 @@
 package com.sam43.currencyexchangeapp.repository
 
-import com.sam43.currencyexchangeapp.BuildConfig
 import com.sam43.currencyexchangeapp.data.local.AppDB
 import com.sam43.currencyexchangeapp.data.models.ConversionResponse
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
@@ -47,15 +46,12 @@ class DefaultMainRepository @Inject constructor(
         }
     }
 
-    override fun getRatesOffline(): Flow<List<CurrencyRateItem>> {
-        TODO("Not yet implemented")
-    }
+    override fun getRatesOffline(): Flow<List<CurrencyRateItem>> =
+        appDB.rateDao.getRatesOffline()
 
-    override suspend fun getRateByCountry(country: String): CurrencyRateItem? {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getRateByCountry(country: String): CurrencyRateItem? =
+        appDB.rateDao.getRateByCountry(country)
 
-    override suspend fun insertRateItem(rateItem: CurrencyRateItem) {
-        TODO("Not yet implemented")
-    }
+    override suspend fun insertRateItem(rateItem: CurrencyRateItem) =
+        appDB.rateDao.insertRateItem(rateItem)
 }

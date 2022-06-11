@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Keep
 @Entity
 data class CurrencyRateItem(
-    @PrimaryKey var country: String? = null,
+    @PrimaryKey var country: String = "USD",
     var currency: String? = null
 )
 
