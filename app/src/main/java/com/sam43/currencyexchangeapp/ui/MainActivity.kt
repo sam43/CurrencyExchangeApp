@@ -18,7 +18,6 @@ import com.sam43.currencyexchangeapp.ui.adapter.RecyclerViewAdapter
 import com.sam43.currencyexchangeapp.utils.showLongToast
 import com.sam43.currencyexchangeapp.utils.to5decimalPoint
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -71,6 +70,11 @@ class MainActivity : AppCompatActivity() {
                         mAdapter.updateView()
                         binding.tvResult.isVisible = false
                     }
+                    is MainViewModel.CurrencyEvent.ConnectionFailure -> {
+                        binding.progressBar.isVisible = true
+                        binding.tvResult.isVisible = false
+                        showLongToast(event.errorText)
+                    }
                     is MainViewModel.CurrencyEvent.Failure -> {
                         binding.progressBar.isVisible = false
                         binding.tvResult.isVisible = true
@@ -79,6 +83,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     is MainViewModel.CurrencyEvent.Loading -> {
                         binding.progressBar.isVisible = true
+                        binding.tvResult.isVisible = false
                     }
                     else -> Log.d(
                         TAG,

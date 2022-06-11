@@ -19,53 +19,18 @@ class DefaultMainRepository @Inject constructor(
     private val dao: RateDao
 ) : MainRepository {
 
-    override suspend fun getRates(base: String?): Resource<CurrencyResponseDto> {
-        return try {
-            val response = api.getRates(base.toString())
-            val result = response.body()
-            if(response.isSuccessful && result != null) {
-                Resource.Success(result)
-            } else {
-                Resource.Error(response.message())
-            }
-        } catch(e: Exception) {
-            Resource.Error(e.message ?: "An error occured")
-        }
-    }
-
-//    override suspend fun getConvertedRates(
-//        amountStr: String,
-//        fromCurrency: String,
-//        toCurrency: String
-//    ): Resource<ConversionResponse> {
-//        return try {
-//            val response = api.convertCurrency(amountStr, fromCurrency, toCurrency)
-//            val result = response.body()
-//            if(response.isSuccessful && result != null) {
-//                Resource.Success(result)
-//            } else {
-//                Resource.Error(response.message())
-//            }
-//        } catch(e: Exception) {
-//            Resource.Error(e.message ?: "An error occured")
-//        }
-//    }
-
     override fun getRatesOffline(base: String): Flow<Resource<CurrencyResponse>> =
         flow {
             emit(Resource.Loading())
-//            val rateInfo = dao.getRatesOffline()?.toRateInfo()
-//            if (rateInfo != null)
-//                emit(Resource.Success(data = rateInfo))
             try {
                 val remoteRateInfos = base.let { api.getRates(it) }
                 remoteRateInfos.body()?.toCurrencyInfoEntity()?.let { dao.insertRateInfos(it) }
             } catch(e: HttpException) {
                 emit(Resource.Error(
-                    message = "Oops, something went wrong!"
+                    message = "Oops, Some error occurred while parsing the response!"
                 ))
             } catch(e: IOException) {
-                emit(Resource.Error(
+                emit(Resource.NoInternet(
                     message = "Couldn't reach server, check your internet connection."
                 ))
             } finally {

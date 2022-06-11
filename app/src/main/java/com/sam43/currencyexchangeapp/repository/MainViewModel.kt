@@ -3,7 +3,6 @@ package com.sam43.currencyexchangeapp.repository
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.data.models.Rates
 import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
@@ -27,6 +26,7 @@ class MainViewModel @Inject constructor(
     sealed class CurrencyEvent {
         class SuccessResponse(val response: CurrencyResponse?): CurrencyEvent()
         class Failure(val errorText: String): CurrencyEvent()
+        class ConnectionFailure(val errorText: String): CurrencyEvent()
         object Loading : CurrencyEvent()
         object Empty : CurrencyEvent()
     }
@@ -54,6 +54,8 @@ class MainViewModel @Inject constructor(
                         when (response) {
                             is Resource.Loading -> _conversion.value =
                                 CurrencyEvent.Loading
+                            is Resource.NoInternet -> _conversion.value =
+                                CurrencyEvent.ConnectionFailure(response.message!!)
                             is Resource.Error -> _conversion.value =
                                 CurrencyEvent.Failure(response.message!!)
                             is Resource.Success -> _conversion.value =

@@ -15,9 +15,7 @@ import com.sam43.currencyexchangeapp.data.local.entity.Converters
 import com.sam43.currencyexchangeapp.network.CurrencyApi
 import com.sam43.currencyexchangeapp.repository.DefaultMainRepository
 import com.sam43.currencyexchangeapp.repository.MainRepository
-import com.sam43.currencyexchangeapp.usecases.AddRateItem
 import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
-import com.sam43.currencyexchangeapp.usecases.GetRateItemByCountry
 import com.sam43.currencyexchangeapp.usecases.GetRates
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
 import com.sam43.currencyexchangeapp.utils.GsonParser
@@ -59,9 +57,7 @@ object AppModule {
     @Singleton
     fun provideNoteUseCases(repository: MainRepository): ConversionUseCases {
         return ConversionUseCases(
-            getRates = GetRates(repository),
-            addRate = AddRateItem(repository),
-            getRateByCountry = GetRateItemByCountry(repository)
+            getRates = GetRates(repository)
         )
     }
 
