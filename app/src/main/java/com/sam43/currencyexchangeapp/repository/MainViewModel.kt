@@ -1,11 +1,8 @@
 package com.sam43.currencyexchangeapp.repository
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
-import com.sam43.currencyexchangeapp.data.models.Rates
 import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
 import com.sam43.currencyexchangeapp.utils.Resource
