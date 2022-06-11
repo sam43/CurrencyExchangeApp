@@ -1,14 +1,21 @@
 package com.sam43.currencyexchangeapp.usecases
 
-import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
+import com.sam43.currencyexchangeapp.data.local.entity.InvalidRateException
+import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.repository.MainRepository
+import com.sam43.currencyexchangeapp.utils.Resource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
+import kotlin.jvm.Throws
 
 class GetRates @Inject constructor(private val repository: MainRepository) {
-//    suspend operator fun invoke(base: String? = "USD"): Flow<List<CurrencyRateItem>> {
-//        return repository.getRates(base).map {
-//
-//        }
-//    }
+
+    @Throws(InvalidRateException::class)
+    operator fun invoke(base: String): Flow<Resource<CurrencyResponse>> {
+        if(base.isBlank()) {
+            return flow {  }
+        }
+        return repository.getRatesOffline(base)
+    }
 }

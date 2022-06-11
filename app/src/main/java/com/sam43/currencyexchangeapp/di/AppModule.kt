@@ -6,10 +6,12 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.room.Room
+import com.google.gson.Gson
 import com.localebro.okhttpprofiler.OkHttpProfilerInterceptor
 import com.sam43.currencyexchangeapp.BuildConfig
-import com.sam43.currencyexchangeapp.CurrencyApplication
 import com.sam43.currencyexchangeapp.data.local.AppDB
+import com.sam43.currencyexchangeapp.data.local.RateDao
+import com.sam43.currencyexchangeapp.data.local.entity.Converters
 import com.sam43.currencyexchangeapp.network.CurrencyApi
 import com.sam43.currencyexchangeapp.repository.DefaultMainRepository
 import com.sam43.currencyexchangeapp.repository.MainRepository
@@ -18,6 +20,7 @@ import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
 import com.sam43.currencyexchangeapp.usecases.GetRateItemByCountry
 import com.sam43.currencyexchangeapp.usecases.GetRates
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
+import com.sam43.currencyexchangeapp.utils.GsonParser
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,8 +46,14 @@ object AppModule {
             app,
             AppDB::class.java,
             AppDB.DATABASE_NAME
-        ).build()
+        )
+            .addTypeConverter(Converters(GsonParser(Gson())))
+            .build()
     }
+
+    @Provides
+    @Singleton
+    fun provideRateDao(appDB: AppDB) = appDB.rateDao
 
     @Provides
     @Singleton
@@ -113,7 +122,8 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideMainRepository(api: CurrencyApi, db: AppDB): MainRepository = DefaultMainRepository(api, db)
+    fun provideMainRepository(api: CurrencyApi, dao: RateDao): MainRepository =
+        DefaultMainRepository(api, dao)
 
     @Singleton
     @Provides

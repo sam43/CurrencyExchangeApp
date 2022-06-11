@@ -5,10 +5,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Keep
-@Entity
 data class CurrencyRateItem(
-    @PrimaryKey var country: String = "USD",
-    var currency: String? = null
+    @PrimaryKey val id: Int? = null,
+    val country: String,
+    val currency: String
 )
-
-class InvalidRateException(message: String): Exception(message)

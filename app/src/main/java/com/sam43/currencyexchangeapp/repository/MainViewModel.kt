@@ -1,25 +1,30 @@
 package com.sam43.currencyexchangeapp.repository
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.data.models.Rates
+import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
 import com.sam43.currencyexchangeapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repository: MainRepository,
+    //private val repository: MainRepository,
+    private val useCases: ConversionUseCases,
     private val dispatchers: DispatcherProvider
 ): ViewModel() {
 
     sealed class CurrencyEvent {
-        class Success(val resultText: String): CurrencyEvent()
         class SuccessResponse(val response: CurrencyResponse?): CurrencyEvent()
         class Failure(val errorText: String): CurrencyEvent()
         object Loading : CurrencyEvent()
@@ -35,21 +40,86 @@ class MainViewModel @Inject constructor(
         fromCurrency: String? = "USD"
     ) {
         val fromAmount = amountStr.toFloatOrNull()
+        if (fromAmount == null) {
+            _conversion.value = CurrencyEvent.Failure("Not a valid amount")
+            return
+        }
+        /*option to set custom 'base' currency param (need subscription for this api)*/
+        viewModelScope.launch(dispatchers.io) {
+            _conversion.value = CurrencyEvent.Loading
+            fromCurrency?.let {
+                useCases.getRates(it)
+                    .onEach { response ->
+                        Log.d(TAG, "convert() called with: response = $response")
+                        when (response) {
+                            is Resource.Loading -> _conversion.value =
+                                CurrencyEvent.Loading
+                            is Resource.Error -> _conversion.value =
+                                CurrencyEvent.Failure(response.message!!)
+                            is Resource.Success -> _conversion.value =
+                                CurrencyEvent.SuccessResponse(response.data)
+                        }
+                    }.launchIn(this)
+            }
+
+        }
+    }
+
+
+
+/*
+    fun convert(
+        amountStr: String,
+        fromCurrency: String? = "USD"
+    ) {
+        val fromAmount = amountStr.toFloatOrNull()
         if(fromAmount == null) {
             _conversion.value = CurrencyEvent.Failure("Not a valid amount")
             return
         }
-
         viewModelScope.launch(dispatchers.io) {
             _conversion.value = CurrencyEvent.Loading
-            when(val ratesResponse = repository.getRates(fromCurrency/*option to set custom 'base' currency param (need subscription for this)*/)) {
+            when(val ratesResponse = repository.getRates(fromCurrency*/
+/*option to set custom 'base' currency param (need subscription for this)*//*
+)) {
                 is Resource.Error -> _conversion.value =
                     CurrencyEvent.Failure(ratesResponse.message!!)
-                is Resource.Success -> _conversion.value =
-                    CurrencyEvent.SuccessResponse(ratesResponse.data)
+                is Resource.Success -> {
+//                    _conversion.value =
+//                        CurrencyEvent.SuccessResponse(ratesResponse.data)
+                    addAllRatesToLocalDB(ratesResponse.data?.rates?.let { convertAsList(it) })
+                }
             }
         }
     }
+*/
+
+//    private fun addAllRatesToLocalDB(list: MutableList<CurrencyRateItem>?) {
+//        list?.forEach {
+//            saveRate(item = it)
+//        }
+//    }
+//
+//    private fun saveRate(item: CurrencyRateItem) = viewModelScope.launch { repository.i(item) }
+//
+//    fun getRateItems() = repository.getRatesOffline()
+
+    //fun getRateByCountry(country: String) = viewModelScope.launch { repository.getRateByCountry(country) }
+//
+//    private fun convertAsList(rates: Rates): MutableList<CurrencyRateItem> {
+//        return mutableListOf(CurrencyRateItem("CAD", (rates.cAD!!).to5decimalPoint()),
+//            CurrencyRateItem("HKD", (rates.hKD!!).to5decimalPoint()),
+//            CurrencyRateItem("ISK", (rates.iSK!!).to5decimalPoint()),
+//            CurrencyRateItem("BDT", (rates.bDT!!).to5decimalPoint()),
+//            CurrencyRateItem("EUR", (rates.eUR!!).to5decimalPoint()),
+//            CurrencyRateItem("PHP", (rates.pHP!!).to5decimalPoint()),
+//            CurrencyRateItem("DKK", (rates.dKK!!).to5decimalPoint()),
+//            CurrencyRateItem("HUF", (rates.hUF!!).to5decimalPoint()),
+//            CurrencyRateItem("CZK", (rates.cZK!!).to5decimalPoint()),
+//            CurrencyRateItem("AUD", (rates.aUD!!).to5decimalPoint()),
+//            CurrencyRateItem("RON", (rates.rON!!).to5decimalPoint()),
+//            CurrencyRateItem("SEK", (rates.sEK!!).to5decimalPoint()))
+//    }
 
     private fun getRateForCurrency(currency: String, rates: Rates): Double? = when (currency) {
         "CAD" -> rates.cAD

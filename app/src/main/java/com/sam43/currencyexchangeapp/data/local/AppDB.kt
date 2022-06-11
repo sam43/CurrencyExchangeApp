@@ -2,12 +2,17 @@ package com.sam43.currencyexchangeapp.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.sam43.currencyexchangeapp.data.local.entity.Converters
+import com.sam43.currencyexchangeapp.data.local.entity.CurrencyResponseEntity
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 
 @Database(
-    entities = [CurrencyRateItem::class],
+    entities = [CurrencyResponseEntity::class],
     version = 1, exportSchema = false
 )
+
+@TypeConverters(Converters::class)
 abstract class AppDB : RoomDatabase() {
     abstract val rateDao: RateDao
 
