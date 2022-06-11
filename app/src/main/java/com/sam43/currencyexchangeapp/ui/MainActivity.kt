@@ -18,15 +18,16 @@ import com.sam43.currencyexchangeapp.ui.adapter.RecyclerViewAdapter
 import com.sam43.currencyexchangeapp.utils.showLongToast
 import com.sam43.currencyexchangeapp.utils.to5decimalPoint
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+open class MainActivity : AppCompatActivity() {
 
     private val TAG = "MainActivity"
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdapter: RecyclerViewAdapter
-
     private val viewModel: MainViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViews() {
         binding.rvGridView.layoutManager = GridLayoutManager(this,3)
-        var selectedItem: String? = "USD"
+        var selectedItem: String?
         binding.spFromCurrency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, id: Long) {
                 selectedItem = parent?.getItemAtPosition(position) as String
@@ -59,20 +60,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun observeChanges() {
         lifecycleScope.launchWhenStarted {
+
             viewModel.conversion.collect { event ->
                 when(event) {
                     is MainViewModel.CurrencyEvent.SuccessResponse -> {
-                        // checking because initially we will be getting result for 1 USD for conversion
-                        val formInput: Double = if (binding.etFrom.text.toString().isEmpty()) 1.0 else binding.etFrom.text.toString().toDouble()
-                        binding.progressBar.isVisible = false
-                        Log.d(TAG, "observeChanges() called with: form value = ${binding.etFrom.text}")
-                        mAdapter = RecyclerViewAdapter(event.response?.rates?.let {
-                            getRatesAsList(
-                                it, formInput)
-                        } as ArrayList<CurrencyRateItem>)
-                        binding.rvGridView.adapter = mAdapter
-                        mAdapter.updateView()
-                        binding.tvResult.isVisible = false
+                        //updateGridView(event.rateItemList)
+                        updateGridView(event)
                     }
                     is MainViewModel.CurrencyEvent.Failure -> {
                         binding.progressBar.isVisible = false
@@ -90,6 +83,24 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun updateGridView(event: MainViewModel.CurrencyEvent.SuccessResponse) {
+        // checking because initially we will be getting result for 1 USD for conversion
+        val formInput: Double = if (binding.etFrom.text.toString().isEmpty()) 1.0 else binding.etFrom.text.toString().toDouble()
+        binding.progressBar.isVisible = false
+        Log.d(TAG, "observeChanges() called with: form value = ${binding.etFrom.text}")
+        mAdapter = RecyclerViewAdapter(
+            event.response?.rates?.let {
+                getRatesAsList(
+                    it, formInput
+                )
+            } as ArrayList<CurrencyRateItem>
+        )
+        //mAdapter = RecyclerViewAdapter(rateItemList as ArrayList<CurrencyRateItem>)
+        binding.rvGridView.adapter = mAdapter
+        mAdapter.updateView()
+        binding.tvResult.isVisible = false
     }
 
     private fun getRatesAsList(rates: Rates, amount: Double): MutableList<CurrencyRateItem> {
