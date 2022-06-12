@@ -1,9 +1,5 @@
-package com.sam43.currencyexchangeapp.repository
+package com.sam43.currencyexchangeapp.domain.repository
 
-import org.junit.Assert.*
-
-import org.junit.Before
-import org.junit.Test
 //
 //class MainViewModelTest {
 //

@@ -1,6 +1,4 @@
-package com.sam43.currencyexchangeapp.repository
-
-import org.junit.Assert.*
+package com.sam43.currencyexchangeapp.domain.repository
 
 import org.junit.Before
 

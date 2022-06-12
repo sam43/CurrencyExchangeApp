@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.Rates
 import com.sam43.currencyexchangeapp.databinding.ActivityMainBinding
-import com.sam43.currencyexchangeapp.repository.MainViewModel
+import com.sam43.currencyexchangeapp.domain.repository.MainViewModel
 import com.sam43.currencyexchangeapp.ui.adapter.RecyclerViewAdapter
 import com.sam43.currencyexchangeapp.utils.showLongToast
 import com.sam43.currencyexchangeapp.utils.to3decimalPoint

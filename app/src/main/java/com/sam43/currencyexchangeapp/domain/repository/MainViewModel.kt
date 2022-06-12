@@ -1,9 +1,10 @@
-package com.sam43.currencyexchangeapp.repository
+package com.sam43.currencyexchangeapp.domain.repository
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkManager
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
-import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
+import com.sam43.currencyexchangeapp.domain.usecases.ConversionUseCases
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
 import com.sam43.currencyexchangeapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val useCases: ConversionUseCases,
-    private val dispatchers: DispatcherProvider
+    private val dispatchers: DispatcherProvider,
+    private val workManager: WorkManager
 ): ViewModel() {
 
     sealed class CurrencyEvent {
@@ -29,6 +31,8 @@ class MainViewModel @Inject constructor(
         object Empty : CurrencyEvent()
     }
 
+    private val _savedWorkInfo = MutableStateFlow<CurrencyEvent>(CurrencyEvent.Empty)
+    val savedWorkInfo: StateFlow<CurrencyEvent> = _savedWorkInfo
     private val _conversion = MutableStateFlow<CurrencyEvent>(CurrencyEvent.Empty)
     val conversion: StateFlow<CurrencyEvent> = _conversion
     private val _conversionRates = MutableStateFlow<CurrencyEvent>(CurrencyEvent.Empty)

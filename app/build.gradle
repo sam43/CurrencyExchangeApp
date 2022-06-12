@@ -106,8 +106,15 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.1"
 
+
+    def work_version = "2.7.1"
+    // Kotlin + coroutines
+    implementation("androidx.work:work-runtime-ktx:$work_version")
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.ext:truth:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    // work manager - Test helpers
+    androidTestImplementation("androidx.work:work-testing:$work_version")
 }

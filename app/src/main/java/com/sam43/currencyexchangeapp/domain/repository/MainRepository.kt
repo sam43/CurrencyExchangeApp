@@ -1,4 +1,4 @@
-package com.sam43.currencyexchangeapp.repository
+package com.sam43.currencyexchangeapp.domain.repository
 
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse

@@ -1,7 +1,5 @@
-package com.sam43.currencyexchangeapp.network
+package com.sam43.currencyexchangeapp.domain.network
 
-import com.sam43.currencyexchangeapp.data.models.ConversionResponse
-import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.data.remote.CurrencyResponseDto
 import retrofit2.Response
 import retrofit2.http.GET

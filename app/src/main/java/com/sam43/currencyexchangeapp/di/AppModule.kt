@@ -6,20 +6,22 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.room.Room
+import androidx.work.WorkManager
 import com.google.gson.Gson
 import com.localebro.okhttpprofiler.OkHttpProfilerInterceptor
 import com.sam43.currencyexchangeapp.BuildConfig
 import com.sam43.currencyexchangeapp.data.local.AppDB
 import com.sam43.currencyexchangeapp.data.local.RateDao
 import com.sam43.currencyexchangeapp.data.local.entity.Converters
-import com.sam43.currencyexchangeapp.network.CurrencyApi
-import com.sam43.currencyexchangeapp.repository.DefaultMainRepository
-import com.sam43.currencyexchangeapp.repository.MainRepository
-import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
-import com.sam43.currencyexchangeapp.usecases.GetConvertedRates
-import com.sam43.currencyexchangeapp.usecases.GetRates
+import com.sam43.currencyexchangeapp.domain.network.CurrencyApi
+import com.sam43.currencyexchangeapp.domain.repository.DefaultMainRepository
+import com.sam43.currencyexchangeapp.domain.repository.MainRepository
+import com.sam43.currencyexchangeapp.domain.usecases.ConversionUseCases
+import com.sam43.currencyexchangeapp.domain.usecases.GetConvertedRates
+import com.sam43.currencyexchangeapp.domain.usecases.GetRates
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
 import com.sam43.currencyexchangeapp.utils.GsonParser
+import com.sam43.currencyexchangeapp.utils.JsonParser
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,6 +40,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 object AppModule {
+
     @Provides
     @Singleton
     fun provideAppDatabase(app: Application): AppDB {
@@ -53,6 +56,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideRateDao(appDB: AppDB) = appDB.rateDao
+
+    @Provides
+    @Singleton
+    fun provideWorkManager(app: Application) = WorkManager.getInstance(app)
 
     @Provides
     @Singleton
@@ -120,8 +127,8 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideMainRepository(api: CurrencyApi, dao: RateDao): MainRepository =
-        DefaultMainRepository(api, dao)
+    fun provideMainRepository(dao: RateDao, workManager: WorkManager): MainRepository =
+        DefaultMainRepository(dao, workManager)
 
     @Singleton
     @Provides
@@ -135,6 +142,10 @@ object AppModule {
         override val unconfined: CoroutineDispatcher
             get() = Dispatchers.Unconfined
     }
+
+    @Provides
+    @Singleton
+    fun provideJsonParser(parser: GsonParser): JsonParser = parser
 
     @Provides
     @Singleton

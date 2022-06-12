@@ -1,11 +1,13 @@
-package com.sam43.currencyexchangeapp.repository
+package com.sam43.currencyexchangeapp.domain.repository
 
 import android.util.Log
+import androidx.work.WorkManager
 import com.sam43.currencyexchangeapp.data.local.RateDao
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.data.models.Rates
-import com.sam43.currencyexchangeapp.network.CurrencyApi
+import com.sam43.currencyexchangeapp.domain.network.CurrencyApi
+import com.sam43.currencyexchangeapp.domain.worker.fetchData
 import com.sam43.currencyexchangeapp.utils.Resource
 import com.sam43.currencyexchangeapp.utils.to3decimalPoint
 import kotlinx.coroutines.flow.Flow
@@ -15,33 +17,25 @@ import java.io.IOException
 import javax.inject.Inject
 
 class DefaultMainRepository @Inject constructor(
-    private val api: CurrencyApi,
-    private val dao: RateDao
+    private val dao: RateDao,
+    private val workManager: WorkManager
 ) : MainRepository {
 
     override fun getRatesOffline(base: String): Flow<Resource<CurrencyResponse?>> = flow {
-            emit(Resource.Loading())
-            // Satisfying single source of truth
-            val rateInfo = dao.getRatesOffline()?.toRateInfo()
-            emit(Resource.Loading(data = rateInfo))
-            try {
-                val remoteRateInfos = base.let { api.getRates(it) }
-                remoteRateInfos.body()?.toCurrencyInfoEntity()?.let { dao.insertRateInfos(it) }
-            } catch(e: HttpException) {
-                emit(Resource.Error(
-                    message = "Oops, Some error occurred while parsing the response!",
-                    data = rateInfo
-                ))
-            } catch(e: IOException) {
-                emit(Resource.NoInternet(
-                    message = "Couldn't reach server, check your internet connection.",
-                    data = rateInfo
-                ))
-            }
+        workManager.fetchData(base = base)
 
-            val rateInfoFinal = dao.getRatesOffline()?.toRateInfo()
-            emit(Resource.Success(data = rateInfoFinal))
-        }
+        // Need to retrieve data here and emit data properly
+
+//        workManager.getWorkInfoByIdLiveData(emotionAnalysisWorker.id)
+//            .observe(this, Observer { workInfo ->
+//                binding.textViewWorkState.text = workInfo.state.name
+//
+//                if (workInfo.state == WorkInfo.State.SUCCEEDED) {
+//                    val userEmotionResult = workInfo.outputData.getString(KEY_USER_EMOTION_RESULT)
+//                    Toast.makeText(this, userEmotionResult, Toast.LENGTH_SHORT).show()
+//                }
+//            })
+    }
 
     override suspend fun getConvertedRates(
         amountStr: String,
@@ -225,34 +219,123 @@ class DefaultMainRepository @Inject constructor(
         else -> null
     }
 
-    private fun getConvertedRate(rates: Rates, from: String, to: String): Double = (1.0/(getRateForCurrency(from, rates)!!)) * getRateForCurrency(to, rates)!!
+    private fun getConvertedRate(rates: Rates, from: String, to: String): Double =
+        (1.0 / (getRateForCurrency(from, rates)!!)) * getRateForCurrency(to, rates)!!
 
-    private fun getRatesAsList(rates: Rates, amount: Double? = 1.0, from: String): MutableList<CurrencyRateItem> {
+    private fun getRatesAsList(
+        rates: Rates,
+        amount: Double? = 1.0,
+        from: String
+    ): MutableList<CurrencyRateItem> {
         return mutableListOf(
             CurrencyRateItem(
                 country = "CAD",
                 currency = (amount!! * getConvertedRate(rates, from, "CAD")).to3decimalPoint()
             ),
-            CurrencyRateItem(country = "HKD", currency = (amount * getConvertedRate(rates, from, "HKD")).to3decimalPoint()),
-            CurrencyRateItem(country = "BDT", currency = (amount * getConvertedRate(rates, from, "BDT")).to3decimalPoint()),
-            CurrencyRateItem(country = "EUR", currency = (amount * getConvertedRate(rates, from, "EUR")).to3decimalPoint()),
-            CurrencyRateItem(country = "KWD", currency = (amount * getConvertedRate(rates, from, "KWD")).to3decimalPoint()),
-            CurrencyRateItem(country = "CNH", currency = (amount * getConvertedRate(rates, from, "CNH")).to3decimalPoint()),
-            CurrencyRateItem(country = "BTC", currency = (amount * getConvertedRate(rates, from, "BTC")).to3decimalPoint()),
-            CurrencyRateItem(country = "GBP", currency = (amount * getConvertedRate(rates, from, "GBP")).to3decimalPoint()),
-            CurrencyRateItem(country = "SGD", currency = (amount * getConvertedRate(rates, from, "SGD")).to3decimalPoint()),
-            CurrencyRateItem(country = "NZD", currency = (amount * getConvertedRate(rates, from, "NZD")).to3decimalPoint()),
-            CurrencyRateItem(country = "INR", currency = (amount * getConvertedRate(rates, from, "INR")).to3decimalPoint()),
-            CurrencyRateItem(country = "CZK", currency = (amount * getConvertedRate(rates, from, "CZK")).to3decimalPoint()),
-            CurrencyRateItem(country = "AUD", currency = (amount * getConvertedRate(rates, from, "AUD")).to3decimalPoint()),
-            CurrencyRateItem(country = "RON", currency = (amount * getConvertedRate(rates, from, "RON")).to3decimalPoint()),
-            CurrencyRateItem(country = "PHP", currency = (amount * getConvertedRate(rates, from, "PHP")).to3decimalPoint()),
-            CurrencyRateItem(country = "ISK", currency = (amount * getConvertedRate(rates, from, "ISK")).to3decimalPoint()),
-            CurrencyRateItem(country = "DKK", currency = (amount * getConvertedRate(rates, from, "DKK")).to3decimalPoint()),
-            CurrencyRateItem(country = "JPY", currency = (amount * getConvertedRate(rates, from, "JPY")).to3decimalPoint()),
-            CurrencyRateItem(country = "SEK", currency = (amount * getConvertedRate(rates, from, "SEK")).to3decimalPoint()),
-            CurrencyRateItem(country = "XPF", currency = (amount * getConvertedRate(rates, from, "XPF")).to3decimalPoint()),
-            CurrencyRateItem(country = "XPT", currency = (amount * getConvertedRate(rates, from, "XPT")).to3decimalPoint())
+            CurrencyRateItem(
+                country = "HKD",
+                currency = (amount * getConvertedRate(rates, from, "HKD")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "BDT",
+                currency = (amount * getConvertedRate(rates, from, "BDT")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "EUR",
+                currency = (amount * getConvertedRate(rates, from, "EUR")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "KWD",
+                currency = (amount * getConvertedRate(rates, from, "KWD")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "CNH",
+                currency = (amount * getConvertedRate(rates, from, "CNH")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "BTC",
+                currency = (amount * getConvertedRate(rates, from, "BTC")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "GBP",
+                currency = (amount * getConvertedRate(rates, from, "GBP")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "SGD",
+                currency = (amount * getConvertedRate(rates, from, "SGD")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "NZD",
+                currency = (amount * getConvertedRate(rates, from, "NZD")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "INR",
+                currency = (amount * getConvertedRate(rates, from, "INR")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "CZK",
+                currency = (amount * getConvertedRate(rates, from, "CZK")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "AUD",
+                currency = (amount * getConvertedRate(rates, from, "AUD")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "RON",
+                currency = (amount * getConvertedRate(rates, from, "RON")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "PHP",
+                currency = (amount * getConvertedRate(rates, from, "PHP")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "ISK",
+                currency = (amount * getConvertedRate(rates, from, "ISK")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "DKK",
+                currency = (amount * getConvertedRate(rates, from, "DKK")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "JPY",
+                currency = (amount * getConvertedRate(rates, from, "JPY")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "SEK",
+                currency = (amount * getConvertedRate(rates, from, "SEK")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "XPF",
+                currency = (amount * getConvertedRate(rates, from, "XPF")).to3decimalPoint()
+            ),
+            CurrencyRateItem(
+                country = "XPT",
+                currency = (amount * getConvertedRate(rates, from, "XPT")).to3decimalPoint()
+            )
         )
     }
 }
+
+/*
+            emit(Resource.Loading())
+            // Satisfying single source of truth
+            val rateInfo = dao.getRatesOffline()?.toRateInfo()
+            emit(Resource.Loading(data = rateInfo))
+            try {
+                val remoteRateInfos = base.let { api.getRates(it) }
+                remoteRateInfos.body()?.toCurrencyInfoEntity()?.let { dao.insertRateInfos(it) }
+            } catch(e: HttpException) {
+                emit(Resource.Error(
+                    message = "Oops, Some error occurred while parsing the response!",
+                    data = rateInfo
+                ))
+            } catch(e: IOException) {
+                emit(Resource.NoInternet(
+                    message = "Couldn't reach server, check your internet connection.",
+                    data = rateInfo
+                ))
+            }
+
+            val rateInfoFinal = dao.getRatesOffline()?.toRateInfo()
+            emit(Resource.Success(data = rateInfoFinal))
+*/

@@ -17,10 +17,8 @@ class Converters(private val jsonParser: JsonParser) {
     }
 
     @TypeConverter
-    fun toRatesJson(meanings: Rates): String {
-        return jsonParser.toJson(
-            meanings,
-            object : TypeToken<Rates>(){}.type
-        ) ?: ""
-    }
+    fun toRatesJson(rates: Rates): String = jsonParser.toJson(
+        rates,
+        object : TypeToken<Rates>(){}.type
+    ) ?: ""
 }
