@@ -22,7 +22,7 @@ class MainViewModel @Inject constructor(
 
     sealed class CurrencyEvent {
         class SuccessResponse(val response: CurrencyResponse?): CurrencyEvent()
-        class SuccessListResponse<Any>(val list: MutableList<Any>?): CurrencyEvent()
+        class SuccessListResponse<T>(val list: MutableList<T>?): CurrencyEvent()
         class Failure(val errorText: String): CurrencyEvent()
         class ConnectionFailure(val errorText: String): CurrencyEvent()
         object Loading : CurrencyEvent()
@@ -32,7 +32,7 @@ class MainViewModel @Inject constructor(
     private val _conversion = MutableStateFlow<CurrencyEvent>(CurrencyEvent.Empty)
     val conversion: StateFlow<CurrencyEvent> = _conversion
     private val _conversionRates = MutableStateFlow<CurrencyEvent>(CurrencyEvent.Empty)
-    val conversionRates: StateFlow<CurrencyEvent> = _conversion
+    val conversionRates: StateFlow<CurrencyEvent> = _conversionRates
 
     fun consumeAllRatesByBase(
         base: String? = "USD"
