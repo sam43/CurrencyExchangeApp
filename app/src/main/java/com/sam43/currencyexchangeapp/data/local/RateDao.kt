@@ -12,9 +12,6 @@ interface RateDao {
     suspend fun insertRateInfos(infos: CurrencyResponseEntity)
 
     @Query("SELECT * FROM rate")
-    suspend fun getRatesOffline(): CurrencyResponseEntity
-
-//    @Query("SELECT * FROM rate WHERE country = :country")
-//    suspend fun getRateByCountry(country: String): CurrencyRateItem?
+    suspend fun getRatesOffline(): CurrencyResponseEntity?
 
 }

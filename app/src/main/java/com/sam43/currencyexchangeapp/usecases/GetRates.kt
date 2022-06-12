@@ -7,12 +7,11 @@ import com.sam43.currencyexchangeapp.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
-import kotlin.jvm.Throws
 
 class GetRates @Inject constructor(private val repository: MainRepository) {
 
     @Throws(InvalidRateException::class)
-    operator fun invoke(base: String): Flow<Resource<CurrencyResponse>> {
+    operator fun invoke(base: String): Flow<Resource<CurrencyResponse?>> {
         if(base.isBlank()) {
             return flow {  }
         }

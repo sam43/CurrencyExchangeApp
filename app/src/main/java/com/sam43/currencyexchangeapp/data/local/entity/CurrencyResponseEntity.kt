@@ -14,11 +14,9 @@ data class CurrencyResponseEntity(
     val rates: Rates? = Rates(),
     val timestamp: Long? = 0L
 ) {
-    fun toRateInfo(): CurrencyResponse {
-        return CurrencyResponse(
-            base = base, rates = rates, timestamp = timestamp
-        )
-    }
+    fun toRateInfo(): CurrencyResponse = CurrencyResponse(
+        base = base, rates = rates, timestamp = timestamp
+    )
 }
 
 class InvalidRateException(message: String): Exception(message)

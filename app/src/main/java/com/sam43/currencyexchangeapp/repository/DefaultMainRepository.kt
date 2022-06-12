@@ -1,12 +1,13 @@
 package com.sam43.currencyexchangeapp.repository
 
+import android.util.Log
 import com.sam43.currencyexchangeapp.data.local.RateDao
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.data.models.Rates
 import com.sam43.currencyexchangeapp.network.CurrencyApi
 import com.sam43.currencyexchangeapp.utils.Resource
-import com.sam43.currencyexchangeapp.utils.to5decimalPoint
+import com.sam43.currencyexchangeapp.utils.to3decimalPoint
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -18,36 +19,42 @@ class DefaultMainRepository @Inject constructor(
     private val dao: RateDao
 ) : MainRepository {
 
-    override fun getRatesOffline(base: String): Flow<Resource<CurrencyResponse>> =
-        flow {
+    override fun getRatesOffline(base: String): Flow<Resource<CurrencyResponse?>> = flow {
             emit(Resource.Loading())
+            // Satisfying single source of truth
+            val rateInfo = dao.getRatesOffline()?.toRateInfo()
+            emit(Resource.Loading(data = rateInfo))
             try {
                 val remoteRateInfos = base.let { api.getRates(it) }
                 remoteRateInfos.body()?.toCurrencyInfoEntity()?.let { dao.insertRateInfos(it) }
             } catch(e: HttpException) {
                 emit(Resource.Error(
-                    message = "Oops, Some error occurred while parsing the response!"
+                    message = "Oops, Some error occurred while parsing the response!",
+                    data = rateInfo
                 ))
             } catch(e: IOException) {
                 emit(Resource.NoInternet(
-                    message = "Couldn't reach server, check your internet connection."
+                    message = "Couldn't reach server, check your internet connection.",
+                    data = rateInfo
                 ))
-            } finally {
-                // Satisfying single source of truth
-                val rateInfoFinal = dao.getRatesOffline().toRateInfo()
-                emit(Resource.Success(data = rateInfoFinal))
             }
+
+            val rateInfoFinal = dao.getRatesOffline()?.toRateInfo()
+            emit(Resource.Success(data = rateInfoFinal))
         }
 
     override suspend fun getConvertedRates(
         amountStr: String,
-        base: String
+        from: String,
+        to: String
     ): Flow<Resource<MutableList<CurrencyRateItem>>> =
         flow {
             emit(Resource.Loading())
             try {
-                val rates = dao.getRatesOffline().rates
-                val rateList = rates?.let { getRatesAsList(it, amountStr.toDouble(), base) }
+                val rates = dao.getRatesOffline()?.rates
+                //val unitRate = rates?.let { getConvertedRate(it, from, to) }
+                val rateList = rates?.let { getRatesAsList(it, amountStr.toDouble(), from) }
+                Log.d("CONVERT_MONEY", "getConvertedRates() called : ${rateList.toString()}")
                 emit(Resource.Success(data = rateList!!))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message.toString()))
@@ -61,7 +68,7 @@ class DefaultMainRepository @Inject constructor(
         "EUR" -> rates.eUR
         "PHP" -> rates.pHP
         "DKK" -> rates.dKK
-        "HUF" -> rates.hUF
+        "HUF" -> rates.hUF // problematic
         "CZK" -> rates.cZK
         "AUD" -> rates.aUD
         "RON" -> rates.rON
@@ -171,15 +178,15 @@ class DefaultMainRepository @Inject constructor(
         "PKR" -> rates.pKR
         "PYG" -> rates.pYG
         "QAR" -> rates.qAR
-        "RSD" -> rates.nIO
-        "RWF" -> rates.nPR
-        "SAR" -> rates.oMR
+        "RSD" -> rates.rSD
+        "RWF" -> rates.rWF
+        "SAR" -> rates.sAR
 //        "SBD" -> rates.pAB?.toDouble()
-        "SCR" -> rates.pEN
-        "SDG" -> rates.pGK
-        "SHP" -> rates.pKR
-        "SLL" -> rates.pYG
-        "SOS" -> rates.qAR
+        "SCR" -> rates.sCR
+        "SDG" -> rates.sDG
+        "SHP" -> rates.sHP
+        "SLL" -> rates.sLL
+        "SOS" -> rates.sOS
         "SRD" -> rates.sRD
         "SSP" -> rates.sSP
         "STD" -> rates.sTD
@@ -218,23 +225,34 @@ class DefaultMainRepository @Inject constructor(
         else -> null
     }
 
-    private fun getRatesAsList(rates: Rates, amount: Double? = 1.0, base: String): MutableList<CurrencyRateItem> {
+    private fun getConvertedRate(rates: Rates, from: String, to: String): Double = (1.0/(getRateForCurrency(from, rates)!!)) * getRateForCurrency(to, rates)!!
+
+    private fun getRatesAsList(rates: Rates, amount: Double? = 1.0, from: String): MutableList<CurrencyRateItem> {
         return mutableListOf(
             CurrencyRateItem(
                 country = "CAD",
-                currency = (amount!! * rates.cAD!!).to5decimalPoint()
+                currency = (amount!! * getConvertedRate(rates, from, "CAD")).to3decimalPoint()
             ),
-            CurrencyRateItem(country = "HKD", currency = (amount * rates.hKD!!).to5decimalPoint()),
-            CurrencyRateItem(country = "ISK", currency = (amount * rates.iSK!!).to5decimalPoint()),
-            CurrencyRateItem(country = "BDT", currency = (amount * rates.bDT!!).to5decimalPoint()),
-            CurrencyRateItem(country = "EUR", currency = (amount * rates.eUR!!).to5decimalPoint()),
-            CurrencyRateItem(country = "PHP", currency = (amount * rates.pHP!!).to5decimalPoint()),
-            CurrencyRateItem(country = "DKK", currency = (amount * rates.dKK!!).to5decimalPoint()),
-            CurrencyRateItem(country = "HUF", currency = (amount * rates.hUF!!).to5decimalPoint()),
-            CurrencyRateItem(country = "CZK", currency = (amount * rates.cZK!!).to5decimalPoint()),
-            CurrencyRateItem(country = "AUD", currency = (amount * rates.aUD!!).to5decimalPoint()),
-            CurrencyRateItem(country = "RON", currency = (amount * rates.rON!!).to5decimalPoint()),
-            CurrencyRateItem(country = "SEK", currency = (amount * rates.sEK!!).to5decimalPoint())
+            CurrencyRateItem(country = "HKD", currency = (amount * getConvertedRate(rates, from, "HKD")).to3decimalPoint()),
+            CurrencyRateItem(country = "BDT", currency = (amount * getConvertedRate(rates, from, "BDT")).to3decimalPoint()),
+            CurrencyRateItem(country = "EUR", currency = (amount * getConvertedRate(rates, from, "EUR")).to3decimalPoint()),
+            CurrencyRateItem(country = "KWD", currency = (amount * getConvertedRate(rates, from, "KWD")).to3decimalPoint()),
+            CurrencyRateItem(country = "CNH", currency = (amount * getConvertedRate(rates, from, "CNH")).to3decimalPoint()),
+            CurrencyRateItem(country = "BTC", currency = (amount * getConvertedRate(rates, from, "BTC")).to3decimalPoint()),
+            CurrencyRateItem(country = "GBP", currency = (amount * getConvertedRate(rates, from, "GBP")).to3decimalPoint()),
+            CurrencyRateItem(country = "SGD", currency = (amount * getConvertedRate(rates, from, "SGD")).to3decimalPoint()),
+            CurrencyRateItem(country = "NZD", currency = (amount * getConvertedRate(rates, from, "NZD")).to3decimalPoint()),
+            CurrencyRateItem(country = "INR", currency = (amount * getConvertedRate(rates, from, "INR")).to3decimalPoint()),
+            CurrencyRateItem(country = "CZK", currency = (amount * getConvertedRate(rates, from, "CZK")).to3decimalPoint()),
+            CurrencyRateItem(country = "AUD", currency = (amount * getConvertedRate(rates, from, "AUD")).to3decimalPoint()),
+            CurrencyRateItem(country = "RON", currency = (amount * getConvertedRate(rates, from, "RON")).to3decimalPoint()),
+            CurrencyRateItem(country = "PHP", currency = (amount * getConvertedRate(rates, from, "PHP")).to3decimalPoint()),
+            CurrencyRateItem(country = "ISK", currency = (amount * getConvertedRate(rates, from, "ISK")).to3decimalPoint()),
+            CurrencyRateItem(country = "DKK", currency = (amount * getConvertedRate(rates, from, "DKK")).to3decimalPoint()),
+            CurrencyRateItem(country = "JPY", currency = (amount * getConvertedRate(rates, from, "JPY")).to3decimalPoint()),
+            CurrencyRateItem(country = "SEK", currency = (amount * getConvertedRate(rates, from, "SEK")).to3decimalPoint()),
+            CurrencyRateItem(country = "XPF", currency = (amount * getConvertedRate(rates, from, "XPF")).to3decimalPoint()),
+            CurrencyRateItem(country = "XPT", currency = (amount * getConvertedRate(rates, from, "XPT")).to3decimalPoint())
         )
     }
 }

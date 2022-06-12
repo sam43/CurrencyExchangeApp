@@ -60,7 +60,8 @@ class MainViewModel @Inject constructor(
 
     fun convert(
         amountStr: String,
-        base: String? = "USD"
+        from: String? = "USD",
+        to: String?
     ) {
         val fromAmount = amountStr.toFloatOrNull()
         if (fromAmount == null) {
@@ -69,8 +70,8 @@ class MainViewModel @Inject constructor(
         }
 
         viewModelScope.launch(dispatchers.io) {
-            base?.let {
-                useCases.getConvertedRates(amount = amountStr, base = base)
+            from?.let {
+                useCases.getConvertedRates(amount = amountStr, from = it, to = to.toString())
                     .onEach { response ->
                         when (response) {
                             is Resource.Loading -> _conversionRates.value =

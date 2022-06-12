@@ -11,10 +11,10 @@ import javax.inject.Inject
 class GetConvertedRates @Inject constructor(private val repository: MainRepository) {
 
     @Throws(InvalidRateException::class)
-    suspend operator fun invoke(amount: String, base: String): Flow<Resource<MutableList<CurrencyRateItem>>> {
-        if(base.isBlank()) {
+    suspend operator fun invoke(amount: String, from: String, to: String): Flow<Resource<MutableList<CurrencyRateItem>>> {
+        if(from.isBlank()) {
             return flow {  }
         }
-        return repository.getConvertedRates(amount, base)
+        return repository.getConvertedRates(amount, from, to)
     }
 }
