@@ -2,6 +2,7 @@ package com.sam43.currencyexchangeapp.domain.worker
 
 import android.content.Context
 import android.util.Log
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ForegroundInfo
@@ -13,12 +14,15 @@ import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.domain.network.CurrencyApi
 import com.sam43.currencyexchangeapp.utils.Constants
 import com.sam43.currencyexchangeapp.utils.JsonParser
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
 
-class SyncDataWorker(appContext: Context, workerParams: WorkerParameters) :
+@HiltWorker
+class SyncDataWorker @AssistedInject constructor(@Assisted appContext: Context, @Assisted workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
 
     @Inject
@@ -68,10 +72,6 @@ class SyncDataWorker(appContext: Context, workerParams: WorkerParameters) :
             e.printStackTrace()
             Result.failure(buildErrorData(e.message, Constants.ERROR_HTTP_EXCEPTION))
         }
-    }
-
-    override suspend fun getForegroundInfo(): ForegroundInfo {
-        return super.getForegroundInfo()
     }
 
     companion object {

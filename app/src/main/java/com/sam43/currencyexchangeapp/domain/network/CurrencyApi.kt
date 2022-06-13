@@ -2,6 +2,7 @@ package com.sam43.currencyexchangeapp.domain.network
 
 import com.sam43.currencyexchangeapp.data.remote.CurrencyResponseDto
 import retrofit2.Response
+import retrofit2.Retrofit
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

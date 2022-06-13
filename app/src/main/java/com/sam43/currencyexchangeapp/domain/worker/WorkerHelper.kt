@@ -4,6 +4,7 @@ import androidx.work.*
 import com.sam43.currencyexchangeapp.utils.Constants
 import java.util.concurrent.TimeUnit
 
+
 object WorkerHelper {
     private var syncWorkRequest: PeriodicWorkRequest? = null
 
@@ -17,9 +18,14 @@ object WorkerHelper {
             .putString(Constants.BASE_CURRENCY, base)
             .build()
 
-        val periodicSyncDataWork = PeriodicWorkRequestBuilder<SyncDataWorker>(
-            30, TimeUnit.MINUTES, // repeatInterval (the period cycle)
-            15, TimeUnit.MINUTES) // flexInterval
+//        val periodicSyncDataWork = PeriodicWorkRequestBuilder<SyncDataWorker>(
+//            5, TimeUnit.SECONDS, // repeatInterval (the period cycle)
+//            3, TimeUnit.SECONDS) // flexInterval
+//            .build()
+
+        val workBuilder =
+            PeriodicWorkRequest.Builder(SyncDataWorker::class.java, 10, TimeUnit.SECONDS)
+        val periodicWorkRequest = workBuilder
             .addTag(Constants.SYNC_DATA_FROM_SERVER_WORK)
             .setInputData(inputData)
             .setConstraints(constraints) // setting a backoff on case the work needs to retry
@@ -30,11 +36,17 @@ object WorkerHelper {
             )
             .build()
 
-        setSyncWorkRequest(periodicSyncDataWork)
-        this.enqueueUniquePeriodicWork(
+        setSyncWorkRequest(periodicWorkRequest)
+//        enqueueUniquePeriodicWork(
+//            Constants.SYNC_DATA_FROM_SERVER_WORK,
+//            ExistingPeriodicWorkPolicy.REPLACE,  //Existing Periodic Work policy
+//            periodicSyncDataWork //work request
+//        )
+
+        enqueueUniquePeriodicWork(
             Constants.SYNC_DATA_FROM_SERVER_WORK,
-            ExistingPeriodicWorkPolicy.KEEP,  //Existing Periodic Work policy
-            periodicSyncDataWork //work request
+            ExistingPeriodicWorkPolicy.REPLACE,
+            periodicWorkRequest
         )
     }
 

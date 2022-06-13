@@ -3,11 +3,13 @@ package com.sam43.currencyexchangeapp.domain.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.domain.usecases.ConversionUseCases
 import com.sam43.currencyexchangeapp.domain.worker.WorkerHelper.fetchData
+import com.sam43.currencyexchangeapp.domain.worker.WorkerHelper.getSyncWorkRequest
 import com.sam43.currencyexchangeapp.utils.Constants
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
 import com.sam43.currencyexchangeapp.utils.Resource
