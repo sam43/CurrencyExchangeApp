@@ -6,7 +6,7 @@ import com.sam43.currencyexchangeapp.utils.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface MainRepository {
-    fun getRatesOffline(base: String): Flow<Resource<CurrencyResponse?>>
+    fun getRatesOffline(workResult: String): Flow<Resource<CurrencyResponse?>>
 
     suspend fun getConvertedRates(
         amountStr: String,

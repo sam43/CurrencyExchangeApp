@@ -1,40 +1,54 @@
 package com.sam43.currencyexchangeapp.domain.repository
 
 import android.util.Log
-import androidx.work.WorkManager
 import com.sam43.currencyexchangeapp.data.local.RateDao
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.data.models.Rates
-import com.sam43.currencyexchangeapp.domain.network.CurrencyApi
-import com.sam43.currencyexchangeapp.domain.worker.fetchData
+import com.sam43.currencyexchangeapp.domain.worker.ErrorOnException
+import com.sam43.currencyexchangeapp.utils.Constants
+import com.sam43.currencyexchangeapp.utils.JsonParser
 import com.sam43.currencyexchangeapp.utils.Resource
 import com.sam43.currencyexchangeapp.utils.to3decimalPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import retrofit2.HttpException
-import java.io.IOException
 import javax.inject.Inject
 
 class DefaultMainRepository @Inject constructor(
     private val dao: RateDao,
-    private val workManager: WorkManager
+    private val parser: JsonParser
 ) : MainRepository {
 
-    override fun getRatesOffline(base: String): Flow<Resource<CurrencyResponse?>> = flow {
-        workManager.fetchData(base = base)
-
+    override fun getRatesOffline(workResult: String): Flow<Resource<CurrencyResponse?>> = flow {
         // Need to retrieve data here and emit data properly
+        var remoteRateInfos: CurrencyResponse? = null
+        var errorData: ErrorOnException? = null
 
-//        workManager.getWorkInfoByIdLiveData(emotionAnalysisWorker.id)
-//            .observe(this, Observer { workInfo ->
-//                binding.textViewWorkState.text = workInfo.state.name
-//
-//                if (workInfo.state == WorkInfo.State.SUCCEEDED) {
-//                    val userEmotionResult = workInfo.outputData.getString(KEY_USER_EMOTION_RESULT)
-//                    Toast.makeText(this, userEmotionResult, Toast.LENGTH_SHORT).show()
-//                }
-//            })
+        emit(Resource.Loading())
+        // Satisfying single source of truth
+        val rateInfo = dao.getRatesOffline()?.toRateInfo()
+        emit(Resource.Loading(data = rateInfo))
+        if (workResult.contains(Constants.ERROR_TYPE)) {
+            errorData =
+                parser.fromJson<ErrorOnException>(workResult, ErrorOnException::class.java)
+        } else {
+            remoteRateInfos =
+                parser.fromJson<CurrencyResponse>(workResult, CurrencyResponse::class.java)
+        }
+
+        if (remoteRateInfos != null) {
+            val rateInfoFinal = dao.getRatesOffline()?.toRateInfo()
+            emit(Resource.Success(data = rateInfoFinal))
+        } else if (errorData != null)  {
+            emit(
+                Resource.Error(
+                    message = errorData.value.toString(),
+                    data = rateInfo
+                )
+            )
+        }
+
     }
 
     override suspend fun getConvertedRates(
@@ -317,25 +331,22 @@ class DefaultMainRepository @Inject constructor(
 }
 
 /*
-            emit(Resource.Loading())
-            // Satisfying single source of truth
-            val rateInfo = dao.getRatesOffline()?.toRateInfo()
-            emit(Resource.Loading(data = rateInfo))
-            try {
-                val remoteRateInfos = base.let { api.getRates(it) }
-                remoteRateInfos.body()?.toCurrencyInfoEntity()?.let { dao.insertRateInfos(it) }
-            } catch(e: HttpException) {
-                emit(Resource.Error(
+
+        try {
+
+        } catch (e: HttpException) {
+            emit(
+                Resource.Error(
                     message = "Oops, Some error occurred while parsing the response!",
                     data = rateInfo
-                ))
-            } catch(e: IOException) {
-                emit(Resource.NoInternet(
+                )
+            )
+        } catch (e: IOException) {
+            emit(
+                Resource.NoInternet(
                     message = "Couldn't reach server, check your internet connection.",
                     data = rateInfo
-                ))
-            }
-
-            val rateInfoFinal = dao.getRatesOffline()?.toRateInfo()
-            emit(Resource.Success(data = rateInfoFinal))
-*/
+                )
+            )
+        }
+* */

@@ -127,8 +127,8 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideMainRepository(dao: RateDao, workManager: WorkManager): MainRepository =
-        DefaultMainRepository(dao, workManager)
+    fun provideMainRepository(dao: RateDao, parser: JsonParser): MainRepository =
+        DefaultMainRepository(dao, parser)
 
     @Singleton
     @Provides
@@ -146,6 +146,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideJsonParser(parser: GsonParser): JsonParser = parser
+
+    @Provides
+    @Singleton
+    fun provideGson(): Gson = Gson()
 
     @Provides
     @Singleton

@@ -1,27 +1,39 @@
 package com.sam43.currencyexchangeapp.ui
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.widget.AdapterView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.Rates
 import com.sam43.currencyexchangeapp.databinding.ActivityMainBinding
 import com.sam43.currencyexchangeapp.domain.repository.MainViewModel
+import com.sam43.currencyexchangeapp.domain.worker.WorkerHelper
 import com.sam43.currencyexchangeapp.ui.adapter.RecyclerViewAdapter
+import com.sam43.currencyexchangeapp.utils.Constants
+import com.sam43.currencyexchangeapp.utils.hideKeyboard
 import com.sam43.currencyexchangeapp.utils.showLongToast
 import com.sam43.currencyexchangeapp.utils.to3decimalPoint
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var workManager: WorkManager
 
     private val TAG = "MainActivity"
     private lateinit var binding: ActivityMainBinding
@@ -38,18 +50,54 @@ class MainActivity : AppCompatActivity() {
         observeChanges()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initViews() {
         binding.rvGridView.layoutManager = GridLayoutManager(this,3)
+        binding.spFromCurrency.setOnTouchListener { view, motion ->
+            view?.let { hideKeyboard(it) }
+            false
+        }
         binding.spFromCurrency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, id: Long) {
                 selectedItem = parent?.getItemAtPosition(position) as String
                 if (binding.etFrom.text.toString().trim().isNotEmpty())
                     viewModel.convert(amountStr = binding.etFrom.text.toString(), from = selectedItem, to = null)
                 else
-                    viewModel.consumeAllRatesByBase(selectedItem)
+                    viewModel.consumeAllRatesUsingWorkManager(selectedItem)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+        }
+        observeWorkManagerRequest()
+    }
+
+    private fun observeWorkManagerRequest() {
+        WorkerHelper.getSyncWorkRequest()?.id?.let {
+            workManager.getWorkInfoByIdLiveData(it).observe(this
+            ) { info ->
+                if (info != null) {
+                    when (info.state) {
+                        WorkInfo.State.SUCCEEDED -> {
+                            val dataResult = info.outputData.getString(Constants.OUTPUT_DATA)
+                            binding.progressBar.isVisible = false
+                            viewModel.setResultToUseCase(dataResult)
+                        }
+                        WorkInfo.State.FAILED -> {
+                            // get error data
+                            val errorData = info.outputData.getString(Constants.ERROR_DATA)
+                            Log.d(TAG, "observeChanges() called with: errorData = $errorData")
+                            // set to error data update
+                            binding.progressBar.isVisible = false
+                            viewModel.setResultToUseCase(errorData)
+                            errorData?.let { errorMsg -> showLongToast(errorMsg) }
+                        }
+                        else -> {
+                            binding.progressBar.isVisible = true
+                            Log.d(TAG, "observeChanges() called with: info.state = ${info.state}")
+                        }
+                    }
+                }
             }
         }
     }

@@ -11,10 +11,10 @@ import javax.inject.Inject
 class GetRates @Inject constructor(private val repository: MainRepository) {
 
     @Throws(InvalidRateException::class)
-    operator fun invoke(base: String): Flow<Resource<CurrencyResponse?>> {
-        if(base.isBlank()) {
+    operator fun invoke(workResult: String): Flow<Resource<CurrencyResponse?>> {
+        if(workResult.isBlank()) {
             return flow {  }
         }
-        return repository.getRatesOffline(base)
+        return repository.getRatesOffline(workResult)
     }
 }
