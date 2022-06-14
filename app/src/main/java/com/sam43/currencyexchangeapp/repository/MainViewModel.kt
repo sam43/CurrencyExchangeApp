@@ -3,16 +3,16 @@ package com.sam43.currencyexchangeapp.repository
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
+import com.sam43.currencyexchangeapp.network.tickerFlow
 import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
 import com.sam43.currencyexchangeapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -34,12 +34,9 @@ class MainViewModel @Inject constructor(
     private val _conversionRates = MutableStateFlow<CurrencyEvent>(CurrencyEvent.Empty)
     val conversionRates: StateFlow<CurrencyEvent> = _conversionRates
 
-    fun consumeAllRatesByBase(
-        base: String? = "USD"
-    ) {
-        /*option to set custom 'base' currency param (need subscription for this api)*/
+    fun consumeRatesApi(base: String? = "USD") {
+        _conversion.value = CurrencyEvent.Loading
         viewModelScope.launch(dispatchers.io) {
-            _conversion.value = CurrencyEvent.Loading
             base?.let {
                 useCases.getRates(it)
                     .onEach { response ->
@@ -56,6 +53,7 @@ class MainViewModel @Inject constructor(
                     }.launchIn(this)
             }
         }
+
     }
 
     fun convert(

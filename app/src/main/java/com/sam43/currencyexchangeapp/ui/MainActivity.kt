@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
                 if (binding.etFrom.text.toString().trim().isNotEmpty())
                     viewModel.convert(amountStr = binding.etFrom.text.toString(), from = selectedItem, to = null)
                 else
-                    viewModel.consumeAllRatesByBase(selectedItem)
+                    viewModel.consumeRatesApi(selectedItem)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
