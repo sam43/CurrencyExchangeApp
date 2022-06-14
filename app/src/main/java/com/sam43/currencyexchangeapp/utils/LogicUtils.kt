@@ -2,6 +2,7 @@ package com.sam43.currencyexchangeapp.utils
 
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.Rates
+import org.jetbrains.annotations.TestOnly
 
 
 fun getRateForCurrency(base: String, rates: Rates): Double? = when (base) {
@@ -170,6 +171,7 @@ fun getRateForCurrency(base: String, rates: Rates): Double? = when (base) {
 
 fun getConvertedRate(rates: Rates, from: String, to: String): Double = (1.0/(getRateForCurrency(from, rates)!!)) * getRateForCurrency(to, rates)!!
 
+@TestOnly
 fun getConvertedRateAsObject(rates: Rates, amount: Double? = 1.0, from: String, to: String): Double =
     amount!! * getConvertedRate(rates, from, to)
 
