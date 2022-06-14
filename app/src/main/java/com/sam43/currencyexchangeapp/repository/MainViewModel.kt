@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
+import com.sam43.currencyexchangeapp.utils.ConnectionLiveData
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
 import com.sam43.currencyexchangeapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel

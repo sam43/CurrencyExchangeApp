@@ -184,6 +184,7 @@ fun getRatesAsList(rates: Rates, amount: Double? = 1.0, from: String): MutableLi
         CurrencyRateItem(country = "EUR", currency = (amount * getConvertedRate(rates, from, "EUR")).to3decimalPoint()),
         CurrencyRateItem(country = "KWD", currency = (amount * getConvertedRate(rates, from, "KWD")).to3decimalPoint()),
         CurrencyRateItem(country = "CNH", currency = (amount * getConvertedRate(rates, from, "CNH")).to3decimalPoint()),
+        CurrencyRateItem(country = "USD", currency = (amount * getConvertedRate(rates, from, "USD")).to3decimalPoint()),
         CurrencyRateItem(country = "BTC", currency = (amount * getConvertedRate(rates, from, "BTC")).to3decimalPoint()),
         CurrencyRateItem(country = "GBP", currency = (amount * getConvertedRate(rates, from, "GBP")).to3decimalPoint()),
         CurrencyRateItem(country = "SGD", currency = (amount * getConvertedRate(rates, from, "SGD")).to3decimalPoint()),

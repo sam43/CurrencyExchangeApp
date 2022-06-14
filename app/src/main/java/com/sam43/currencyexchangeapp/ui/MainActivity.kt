@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import com.sam43.currencyexchangeapp.CurrencyApplication
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.databinding.ActivityMainBinding
 import com.sam43.currencyexchangeapp.repository.MainViewModel
@@ -26,10 +25,10 @@ class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdapter: RecyclerViewAdapter
-    lateinit var selectedItem: String
+    private var selectedItem: String = defaultCurrency
 
     private val viewModel: MainViewModel by viewModels()
-    private val connectionViewModel: ConnectionLiveData by lazy { ConnectionLiveData(this) }
+    private val connectionLiveData: ConnectionLiveData by lazy { ConnectionLiveData(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,10 +56,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        connectionViewModel.observeForever { isConnected ->
-            if (isConnected) viewModel.consumeRatesApi(defaultCurrency) // initialize with default value
-            else initialCall(defaultCurrency)
+        connectionLiveData.observeForever { isConnected ->
+            if (isConnected) {
+                viewModel.consumeRatesApi(defaultCurrency) // initialize with default value
+            }
+            else {
+                initialCall(defaultCurrency)
+                showLongToast(internetConnectionError)
+            }
         }
+    }
+
+    override fun onDestroy() {
+        connectionLiveData.removeObservers(this)
+        super.onDestroy()
     }
 
     private fun observeChanges() {
@@ -73,9 +82,7 @@ class MainActivity : AppCompatActivity() {
                         isSucceededOnce = true
                         //updateList(event.response?.rates?.let { getRatesAsList(it, amount.toDouble(), "USD") })
                     }
-                    is MainViewModel.CurrencyEvent.ConnectionFailure -> {
-                        whenFailedConnection(event)
-                    }
+                    is MainViewModel.CurrencyEvent.ConnectionFailure -> whenFailedConnection(event)
                     is MainViewModel.CurrencyEvent.Failure -> whenFailed(event)
                     is MainViewModel.CurrencyEvent.Loading -> whenLoading(event)
                     else -> Log.d(
@@ -145,5 +152,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val defaultCurrency = "USD"
+        private const val internetConnectionError = "Couldn't reach server, check your internet connection."
     }
 }
