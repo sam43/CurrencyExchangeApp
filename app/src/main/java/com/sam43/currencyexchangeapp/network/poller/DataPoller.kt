@@ -25,11 +25,11 @@ class DataPoller @Inject constructor(
     override fun poll(delay: Long, query: String): Flow<Response<CurrencyResponseDto>> =
         channelFlow {
             while (!isClosedForSend) {
-                if (CurrencyApplication.pollingState == "INACTIVE" || !CurrencyApplication.isInternetConnected) {
-                    Log.d(TAG, "poll() stopping called")
-                    close()
-                    return@channelFlow
-                }
+//                if (CurrencyApplication.pollingState == "INACTIVE" || !CurrencyApplication.isInternetConnected) {
+//                    Log.d(TAG, "poll() stopping called")
+//                    close()
+//                    return@channelFlow
+//                }
                 Log.d(TAG, "poll() running called")
                 // X unit time delay
                 delay(delay)

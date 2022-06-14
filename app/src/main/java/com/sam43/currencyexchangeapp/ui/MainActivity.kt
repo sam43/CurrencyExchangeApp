@@ -10,13 +10,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import com.sam43.currencyexchangeapp.CurrencyApplication
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
-import com.sam43.currencyexchangeapp.data.models.Rates
 import com.sam43.currencyexchangeapp.databinding.ActivityMainBinding
 import com.sam43.currencyexchangeapp.repository.MainViewModel
 import com.sam43.currencyexchangeapp.ui.adapter.RecyclerViewAdapter
+import com.sam43.currencyexchangeapp.utils.ConnectionLiveData
 import com.sam43.currencyexchangeapp.utils.showLongToast
-import com.sam43.currencyexchangeapp.utils.to3decimalPoint
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var selectedItem: String
 
     private val viewModel: MainViewModel by viewModels()
+    private val connectionViewModel: ConnectionLiveData by lazy { ConnectionLiveData(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,20 +53,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        connectionViewModel.observeForever { isConnected ->
+            CurrencyApplication.isNetworkConnected = isConnected
+        }
+    }
+
     private fun observeChanges() {
         lifecycleScope.launchWhenStarted {
             viewModel.conversion.collectLatest { event ->
                 when(event) {
                     is MainViewModel.CurrencyEvent.SuccessResponse -> {
                         // checking because initially we will be getting result for 1 USD for conversion
-                        val amount = binding.etFrom.text.toString().ifEmpty { "1.0" }
-                        if (binding.etFrom.text.toString().isEmpty())
-                            viewModel.convert(amountStr = amount, from = selectedItem, to = null)
+                        initialCall()
+                        //updateList(event.response?.rates?.let { getRatesAsList(it, amount.toDouble(), "USD") })
                     }
                     is MainViewModel.CurrencyEvent.ConnectionFailure -> {
-                        binding.progressBar.isVisible = true
-                        binding.tvResult.isVisible = false
-                        showLongToast(event.errorText)
+                        whenFailedConnection(event)
                     }
                     is MainViewModel.CurrencyEvent.Failure -> whenFailed(event)
                     is MainViewModel.CurrencyEvent.Loading -> whenLoading(event)
@@ -94,7 +99,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun whenFailedConnection(event: MainViewModel.CurrencyEvent.ConnectionFailure) {
+        binding.progressBar.isVisible = true
+        binding.tvResult.isVisible = false
+        showLongToast(event.errorText)
+    }
+
+    private fun initialCall() {
+        val amount = binding.etFrom.text.toString().ifEmpty { "1.0" }
+        if (binding.etFrom.text.toString().isEmpty())
+            viewModel.convert(amountStr = amount, from = selectedItem, to = null)
+    }
+
     private fun updateList(list: MutableList<CurrencyRateItem>?) {
+        if (list.isNullOrEmpty()) return
         binding.progressBar.isVisible = false
         @Suppress("UNCHECKED_CAST")
         mAdapter = RecyclerViewAdapter(list as ArrayList<CurrencyRateItem>)
@@ -119,21 +137,5 @@ class MainActivity : AppCompatActivity() {
     private fun whenLoading(event: MainViewModel.CurrencyEvent.Loading) {
         binding.progressBar.isVisible = true
         binding.tvResult.isVisible = false
-    }
-
-    private fun getRatesAsList(rates: Rates): MutableList<CurrencyRateItem> {
-        val amount = binding.etFrom.text.toString().ifEmpty { "1.0" }.toDouble()
-        return mutableListOf(CurrencyRateItem(country = "CAD", currency = (amount * rates.cAD!!).to3decimalPoint()),
-        CurrencyRateItem(country = "HKD", currency = (amount * rates.hKD!!).to3decimalPoint()),
-        CurrencyRateItem(country = "ISK", currency = (amount * rates.iSK!!).to3decimalPoint()),
-        CurrencyRateItem(country = "BDT", currency = (amount * rates.bDT!!).to3decimalPoint()),
-        CurrencyRateItem(country = "EUR", currency = (amount * rates.eUR!!).to3decimalPoint()),
-        CurrencyRateItem(country = "PHP", currency = (amount * rates.pHP!!).to3decimalPoint()),
-        CurrencyRateItem(country = "DKK", currency = (amount * rates.dKK!!).to3decimalPoint()),
-        CurrencyRateItem(country = "HUF", currency = (amount * rates.hUF!!).to3decimalPoint()),
-        CurrencyRateItem(country = "CZK", currency = (amount * rates.cZK!!).to3decimalPoint()),
-        CurrencyRateItem(country = "AUD", currency = (amount * rates.aUD!!).to3decimalPoint()),
-        CurrencyRateItem(country = "RON", currency = (amount * rates.rON!!).to3decimalPoint()),
-        CurrencyRateItem(country = "SEK", currency = (amount * rates.sEK!!).to3decimalPoint()))
     }
 }

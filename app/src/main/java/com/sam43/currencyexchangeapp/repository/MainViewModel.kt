@@ -53,7 +53,6 @@ class MainViewModel @Inject constructor(
                     }.launchIn(this)
             }
         }
-
     }
 
     fun convert(
@@ -84,10 +83,5 @@ class MainViewModel @Inject constructor(
                     }.launchIn(this)
             }
         }
-    }
-
-    override fun onCleared() {
-        useCases.getRates.stopScheduledCall()
-        super.onCleared()
     }
 }
