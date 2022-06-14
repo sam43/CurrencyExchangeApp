@@ -4,22 +4,20 @@ package com.sam43.currencyexchangeapp.network.poller
 
 import android.util.Log
 import com.sam43.currencyexchangeapp.CurrencyApplication
-import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.data.remote.CurrencyResponseDto
 import com.sam43.currencyexchangeapp.network.CurrencyApi
-import com.sam43.currencyexchangeapp.repository.MainRepository
-import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
-import com.sam43.currencyexchangeapp.utils.Resource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.flowOn
 import retrofit2.Response
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
+@Deprecated("Not in use currently")
 class DataPoller @Inject constructor(
-    //private val repository: MainRepository,
     private val api: CurrencyApi,
     private val dispatcher: DispatcherProvider
 ) : Poller {
@@ -39,4 +37,8 @@ class DataPoller @Inject constructor(
                 send(api.getRates(base = query))
             }
         }.flowOn(dispatcher.io)
+
+    override fun pollStop() {
+        dispatcher.io.cancel()
+    }
 }

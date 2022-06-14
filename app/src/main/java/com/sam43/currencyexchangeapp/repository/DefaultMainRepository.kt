@@ -8,6 +8,7 @@ import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.data.models.Rates
 import com.sam43.currencyexchangeapp.network.CurrencyApi
 import com.sam43.currencyexchangeapp.network.poller.Poller
+import com.sam43.currencyexchangeapp.network.poller.Timer
 import com.sam43.currencyexchangeapp.utils.Resource
 import com.sam43.currencyexchangeapp.utils.to3decimalPoint
 import kotlinx.coroutines.flow.Flow
@@ -18,8 +19,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 class DefaultMainRepository @Inject constructor(
-    //private val api: CurrencyApi,
-    private val poller: Poller,
+    private val api: CurrencyApi,
     private val dao: RateDao
 ) : MainRepository {
 
@@ -29,12 +29,17 @@ class DefaultMainRepository @Inject constructor(
             val rateInfo = dao.getRatesOffline()?.toRateInfo()
             emit(Resource.Loading(data = rateInfo))
             try {
-                val remoteRateInfos = base.let { poller.poll(10, base) }
-                CurrencyApplication.pollingState = "ACTIVE"
-                remoteRateInfos.collectLatest { response ->
-                    response.body()?.toCurrencyInfoEntity()?.let { dao.insertRateInfos(it) }
-                    CurrencyApplication.pollingState = "INACTIVE"
+                val remoteRateInfo = base.let { api.getRates(it) }
+                remoteRateInfo.body()?.toCurrencyInfoEntity()?.let {
+                    dao.insertRateInfos(it)
                 }
+//                val remoteRateInfos = base.let { poller.poll(10, base) }
+                //CurrencyApplication.isInternetConnected = true
+//                remoteRateInfos.collectLatest { response ->
+//                    response.body()?.toCurrencyInfoEntity()?.let { dao.insertRateInfos(it) }
+//                    CurrencyApplication.isInternetConnected = false
+//                    poller.pollStop()
+//                }
             } catch(e: HttpException) {
                 emit(Resource.Error(
                     message = "Oops, Some error occurred while parsing the response!",
