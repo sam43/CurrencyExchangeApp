@@ -3,20 +3,19 @@ package com.sam43.currencyexchangeapp.repository
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
-import com.sam43.currencyexchangeapp.network.tickerFlow
+import com.sam43.currencyexchangeapp.network.poller.Poller
 import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
 import com.sam43.currencyexchangeapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val useCases: ConversionUseCases,
+    //private val poller: Poller,
     private val dispatchers: DispatcherProvider
 ): ViewModel() {
 
@@ -38,7 +37,7 @@ class MainViewModel @Inject constructor(
         _conversion.value = CurrencyEvent.Loading
         viewModelScope.launch(dispatchers.io) {
             base?.let {
-                useCases.getRates(it)
+                useCases.getRates(base)
                     .onEach { response ->
                         when (response) {
                             is Resource.Loading -> _conversion.value =
