@@ -3,7 +3,7 @@ buildscript {
     ext {
         kotlin_version = '1.6.21'
         hilt_version = '2.40.5'
-        okhttp_log_intercepter = '4.9.3'
+        okhttp_log_intercepter = '5.0.0-alpha.2'
         okhttp_profile_intercepter = '1.0.8'
     }
 
