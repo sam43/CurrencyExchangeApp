@@ -1,11 +1,13 @@
 package com.sam43.currencyexchangeapp.repository
 
 import android.util.Log
+import com.sam43.currencyexchangeapp.CurrencyApplication
 import com.sam43.currencyexchangeapp.data.local.RateDao
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.data.models.Rates
 import com.sam43.currencyexchangeapp.network.CurrencyApi
+import com.sam43.currencyexchangeapp.network.poller.Poller
 import com.sam43.currencyexchangeapp.utils.Resource
 import com.sam43.currencyexchangeapp.utils.to3decimalPoint
 import kotlinx.coroutines.flow.Flow
