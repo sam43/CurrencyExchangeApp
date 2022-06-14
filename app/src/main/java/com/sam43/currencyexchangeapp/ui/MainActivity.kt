@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    private var isSucceededOnce: Boolean = false
     private val TAG = "MainActivity"
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdapter: RecyclerViewAdapter
@@ -43,12 +44,8 @@ class MainActivity : AppCompatActivity() {
         binding.spFromCurrency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, id: Long) {
                 selectedItem = parent?.getItemAtPosition(position) as String
-                if (binding.etFrom.text.toString().trim().isNotEmpty())
-                    viewModel.convert(amountStr = binding.etFrom.text.toString(), from = selectedItem, to = null)
-                else
-                    viewModel.consumeRatesApi(selectedItem)
+                initialCall()
             }
-
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
@@ -57,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         connectionViewModel.observeForever { isConnected ->
             CurrencyApplication.isNetworkConnected = isConnected
+            viewModel.consumeRatesApi("USD") // initialize with default value
         }
     }
 
@@ -67,6 +65,7 @@ class MainActivity : AppCompatActivity() {
                     is MainViewModel.CurrencyEvent.SuccessResponse -> {
                         // checking because initially we will be getting result for 1 USD for conversion
                         initialCall()
+                        isSucceededOnce = true
                         //updateList(event.response?.rates?.let { getRatesAsList(it, amount.toDouble(), "USD") })
                     }
                     is MainViewModel.CurrencyEvent.ConnectionFailure -> {
@@ -100,6 +99,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun whenFailedConnection(event: MainViewModel.CurrencyEvent.ConnectionFailure) {
+        initialCall() // load from local
         binding.progressBar.isVisible = true
         binding.tvResult.isVisible = false
         showLongToast(event.errorText)

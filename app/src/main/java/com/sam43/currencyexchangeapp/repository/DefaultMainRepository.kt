@@ -22,7 +22,9 @@ class DefaultMainRepository @Inject constructor(
         emit(Resource.Loading())
         // Satisfying single source of truth
         val rateInfo = dao.getRatesOffline()?.toRateInfo()
-        emit(Resource.Loading(data = rateInfo))
+        rateInfo?.let {
+            emit(Resource.Loading(data = it))
+        }
         try {
             val remoteRateInfo = base.let { api.getRates(it) }
             remoteRateInfo.body()?.toCurrencyInfoEntity()?.let {
