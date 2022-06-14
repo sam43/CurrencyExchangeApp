@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.collectLatest
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
+    private var isDefaultViewEnabled: Boolean = true
     private val TAG = "MainActivity"
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdapter: RecyclerViewAdapter
@@ -61,8 +62,8 @@ class MainActivity : AppCompatActivity() {
                     is MainViewModel.CurrencyEvent.SuccessResponse -> {
                         // checking because initially we will be getting result for 1 USD for conversion
                         binding.progressBar.isVisible = false
-                        viewModel.convert(amountStr = binding.etFrom.text.toString(), from = selectedItem, to = null)
-                        binding.tvResult.isVisible = false
+                        val amount = binding.etFrom.text.toString().ifEmpty { "1.0" }
+                        viewModel.convert(amountStr = amount, from = selectedItem, to = null)
                     }
                     is MainViewModel.CurrencyEvent.ConnectionFailure -> {
                         binding.progressBar.isVisible = true
@@ -89,7 +90,7 @@ class MainActivity : AppCompatActivity() {
                         mAdapter = RecyclerViewAdapter(event.list as ArrayList<CurrencyRateItem>)
                         binding.rvGridView.adapter = mAdapter
                         mAdapter.updateView()
-                        binding.tvResult.isVisible = false
+                        if (isDefaultViewEnabled) defaultView("Initial BASE amount set to US $1.0", Color.GREEN)
                     }
                     else -> Log.d(
                         TAG,
@@ -105,6 +106,13 @@ class MainActivity : AppCompatActivity() {
         binding.tvResult.isVisible = true
         binding.tvResult.setTextColor(Color.RED)
         binding.tvResult.text = event.errorText
+    }
+
+    private fun defaultView(text: String, color: Int) {
+        binding.tvResult.isVisible = true
+        binding.tvResult.setTextColor(color)
+        binding.tvResult.text = text
+        isDefaultViewEnabled = false
     }
 
     private fun whenLoading(event: MainViewModel.CurrencyEvent.Loading) {

@@ -47,7 +47,6 @@
             android:id="@+id/etFrom"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="1.0"
             android:inputType="numberDecimal" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -68,14 +67,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.13" />
+        app:layout_constraintGuide_percent="0.14" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.29" />
+        app:layout_constraintGuide_percent="0.33" />
 
     <Spinner
         android:id="@+id/spFromCurrency"
@@ -90,14 +89,16 @@
         android:id="@+id/tvResult"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:padding="4dp"
-        android:textColor="@color/black"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/guideline1"
         app:layout_constraintEnd_toEndOf="@+id/tilFrom"
         app:layout_constraintStart_toStartOf="@+id/tilFrom"
         app:layout_constraintTop_toBottomOf="@+id/tilFrom"
-        tools:text="10 EUR = 15.0 USD" />
+        tools:text="10 EUR = 15.0 USD"
+        tools:visibility="visible" />
 
     <ProgressBar
         android:id="@+id/progressBar"

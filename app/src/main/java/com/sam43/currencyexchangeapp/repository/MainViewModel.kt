@@ -15,15 +15,14 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val useCases: ConversionUseCases,
-    //private val poller: Poller,
     private val dispatchers: DispatcherProvider
-): ViewModel() {
+) : ViewModel() {
 
     sealed class CurrencyEvent {
-        class SuccessResponse(val response: CurrencyResponse?): CurrencyEvent()
-        class SuccessListResponse<T>(val list: MutableList<T>?): CurrencyEvent()
-        class Failure(val errorText: String): CurrencyEvent()
-        class ConnectionFailure(val errorText: String): CurrencyEvent()
+        class SuccessResponse(val response: CurrencyResponse?) : CurrencyEvent()
+        class SuccessListResponse<T>(val list: MutableList<T>?) : CurrencyEvent()
+        class Failure(val errorText: String) : CurrencyEvent()
+        class ConnectionFailure(val errorText: String) : CurrencyEvent()
         object Loading : CurrencyEvent()
         object Empty : CurrencyEvent()
     }
@@ -81,6 +80,12 @@ class MainViewModel @Inject constructor(
                                 CurrencyEvent.SuccessListResponse(response.data)
                         }
                     }.launchIn(this)
-            } }
+            }
+        }
+    }
+
+    override fun onCleared() {
+        useCases.getRates.stopScheduledCall()
+        super.onCleared()
     }
 }
