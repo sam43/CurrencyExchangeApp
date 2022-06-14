@@ -11,8 +11,7 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class GetRates @Inject constructor(
-    private val repository: MainRepository,
-    private val poller: Poller
+    private val repository: MainRepository
 ) {
 
     @Throws(InvalidRateException::class)
@@ -20,6 +19,6 @@ class GetRates @Inject constructor(
         if(base.isBlank()) {
             return flow {  }
         }
-        return poller.poll(10, base)
+        return repository.getRatesOffline(base)
     }
 }

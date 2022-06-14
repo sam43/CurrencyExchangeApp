@@ -17,7 +17,6 @@ import com.sam43.currencyexchangeapp.network.poller.DataPoller
 import com.sam43.currencyexchangeapp.network.poller.Poller
 import com.sam43.currencyexchangeapp.repository.DefaultMainRepository
 import com.sam43.currencyexchangeapp.repository.MainRepository
-import com.sam43.currencyexchangeapp.repository.MainViewModel
 import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
 import com.sam43.currencyexchangeapp.usecases.GetConvertedRates
 import com.sam43.currencyexchangeapp.usecases.GetRates
@@ -59,9 +58,9 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideNoteUseCases(repository: MainRepository, poller: Poller): ConversionUseCases {
+    fun provideNoteUseCases(repository: MainRepository): ConversionUseCases {
         return ConversionUseCases(
-            getRates = GetRates(repository, poller),
+            getRates = GetRates(repository),
             getConvertedRates = GetConvertedRates(repository)
         )
     }
@@ -122,13 +121,13 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideMainRepository(api: CurrencyApi, dao: RateDao): MainRepository =
-        DefaultMainRepository(api, dao)
+    fun provideMainRepository(poller: Poller, dao: RateDao): MainRepository =
+        DefaultMainRepository(poller, dao)
 
     @Singleton
     @Provides
-    fun provideDataPoller(repository: MainRepository, dispatcher: DispatcherProvider): Poller =
-        DataPoller(repository, dispatcher)
+    fun provideDataPoller(api: CurrencyApi, dispatcher: DispatcherProvider): Poller =
+        DataPoller(api, dispatcher)
 
     @Singleton
     @Provides
