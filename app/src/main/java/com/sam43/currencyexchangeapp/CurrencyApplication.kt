@@ -7,7 +7,7 @@ import kotlin.random.Random
 @HiltAndroidApp
 class CurrencyApplication : Application() {
     companion object {
-        var isInternetConnected = Random.nextBoolean()
-        var pollingState = "ACTIVE" //"INACTIVE"
+        var isInternetConnected = true // Random.nextBoolean()
+        var pollingState = "INACTIVE" // "ACTIVE" //
     }
 }
