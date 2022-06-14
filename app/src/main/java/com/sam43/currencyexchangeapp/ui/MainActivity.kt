@@ -22,8 +22,6 @@ import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
-    private var isDefaultViewEnabled: Boolean = true
     private val TAG = "MainActivity"
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdapter: RecyclerViewAdapter
@@ -61,9 +59,11 @@ class MainActivity : AppCompatActivity() {
                 when(event) {
                     is MainViewModel.CurrencyEvent.SuccessResponse -> {
                         // checking because initially we will be getting result for 1 USD for conversion
-                        binding.progressBar.isVisible = false
+//                        binding.progressBar.isVisible = false
                         val amount = binding.etFrom.text.toString().ifEmpty { "1.0" }
-                        viewModel.convert(amountStr = amount, from = selectedItem, to = null)
+                        if (binding.etFrom.text.toString().isEmpty())
+                            viewModel.convert(amountStr = amount, from = selectedItem, to = null)
+                        //updateList(event.response?.rates?.let { getRatesAsList(it) })
                     }
                     is MainViewModel.CurrencyEvent.ConnectionFailure -> {
                         binding.progressBar.isVisible = true
@@ -85,12 +85,8 @@ class MainActivity : AppCompatActivity() {
                     is MainViewModel.CurrencyEvent.Loading -> whenLoading(event)
                     is MainViewModel.CurrencyEvent.Failure -> whenFailed(event)
                     is MainViewModel.CurrencyEvent.SuccessListResponse<*> -> {
-                        binding.progressBar.isVisible = false
                         @Suppress("UNCHECKED_CAST")
-                        mAdapter = RecyclerViewAdapter(event.list as ArrayList<CurrencyRateItem>)
-                        binding.rvGridView.adapter = mAdapter
-                        mAdapter.updateView()
-                        if (isDefaultViewEnabled) defaultView("Initial BASE amount set to US $1.0", Color.GREEN)
+                        updateList(event.list as ArrayList<CurrencyRateItem>)
                     }
                     else -> Log.d(
                         TAG,
@@ -101,18 +97,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateList(list: MutableList<CurrencyRateItem>?) {
+        binding.progressBar.isVisible = false
+        @Suppress("UNCHECKED_CAST")
+        mAdapter = RecyclerViewAdapter(list as ArrayList<CurrencyRateItem>)
+        binding.rvGridView.adapter = mAdapter
+        mAdapter.updateView()
+        if (binding.etFrom.text.toString().isEmpty())
+            defaultView("Initial BASE amount set to $selectedItem 1.0", Color.GREEN)
+    }
+
     private fun whenFailed(event: MainViewModel.CurrencyEvent.Failure) {
         binding.progressBar.isVisible = false
         binding.tvResult.isVisible = true
-        binding.tvResult.setTextColor(Color.RED)
-        binding.tvResult.text = event.errorText
+        defaultView(event.errorText, Color.RED)
     }
 
     private fun defaultView(text: String, color: Int) {
         binding.tvResult.isVisible = true
         binding.tvResult.setTextColor(color)
         binding.tvResult.text = text
-        isDefaultViewEnabled = false
     }
 
     private fun whenLoading(event: MainViewModel.CurrencyEvent.Loading) {
@@ -120,7 +124,8 @@ class MainActivity : AppCompatActivity() {
         binding.tvResult.isVisible = false
     }
 
-    private fun getRatesAsList(rates: Rates, amount: Double): MutableList<CurrencyRateItem> {
+    private fun getRatesAsList(rates: Rates): MutableList<CurrencyRateItem> {
+        val amount = binding.etFrom.text.toString().ifEmpty { "1.0" }.toDouble()
         return mutableListOf(CurrencyRateItem(country = "CAD", currency = (amount * rates.cAD!!).to3decimalPoint()),
         CurrencyRateItem(country = "HKD", currency = (amount * rates.hKD!!).to3decimalPoint()),
         CurrencyRateItem(country = "ISK", currency = (amount * rates.iSK!!).to3decimalPoint()),

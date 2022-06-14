@@ -55,11 +55,11 @@ class MainViewModel @Inject constructor(
     }
 
     fun convert(
-        amountStr: String,
+        amountStr: String?,
         from: String? = "USD",
         to: String?
     ) {
-        val fromAmount = amountStr.toFloatOrNull()
+        val fromAmount = amountStr?.toFloatOrNull()
         if (fromAmount == null) {
             _conversion.value = CurrencyEvent.Failure("Not a valid amount")
             return
