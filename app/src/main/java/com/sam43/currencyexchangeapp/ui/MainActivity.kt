@@ -44,8 +44,13 @@ class MainActivity : AppCompatActivity() {
         binding.spFromCurrency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, id: Long) {
                 selectedItem = parent?.getItemAtPosition(position) as String
-                initialCall()
+                when {
+                    binding.etFrom.text.toString().trim().isNotEmpty() ->
+                        viewModel.convert(amountStr = binding.etFrom.text.toString(), from = selectedItem, to = null)
+                    else -> initialCall(selectedItem)
+                }
             }
+
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
@@ -53,8 +58,8 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         connectionViewModel.observeForever { isConnected ->
-            CurrencyApplication.isNetworkConnected = isConnected
-            viewModel.consumeRatesApi("USD") // initialize with default value
+            if (isConnected) viewModel.consumeRatesApi(defaultCurrency) // initialize with default value
+            else initialCall(defaultCurrency)
         }
     }
 
@@ -64,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                 when(event) {
                     is MainViewModel.CurrencyEvent.SuccessResponse -> {
                         // checking because initially we will be getting result for 1 USD for conversion
-                        initialCall()
+                        initialCall(selectedItem)
                         isSucceededOnce = true
                         //updateList(event.response?.rates?.let { getRatesAsList(it, amount.toDouble(), "USD") })
                     }
@@ -99,16 +104,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun whenFailedConnection(event: MainViewModel.CurrencyEvent.ConnectionFailure) {
-        initialCall() // load from local
         binding.progressBar.isVisible = true
         binding.tvResult.isVisible = false
         showLongToast(event.errorText)
     }
 
-    private fun initialCall() {
+    private fun initialCall(base: String) {
         val amount = binding.etFrom.text.toString().ifEmpty { "1.0" }
         if (binding.etFrom.text.toString().isEmpty())
-            viewModel.convert(amountStr = amount, from = selectedItem, to = null)
+            viewModel.convert(amountStr = amount, from = base, to = null)
     }
 
     private fun updateList(list: MutableList<CurrencyRateItem>?) {
@@ -137,5 +141,9 @@ class MainActivity : AppCompatActivity() {
     private fun whenLoading(event: MainViewModel.CurrencyEvent.Loading) {
         binding.progressBar.isVisible = true
         binding.tvResult.isVisible = false
+    }
+
+    companion object {
+        private const val defaultCurrency = "USD"
     }
 }
