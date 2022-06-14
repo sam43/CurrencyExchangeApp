@@ -48,8 +48,7 @@ class MainActivity : AppCompatActivity() {
                     viewModel.consumeRatesApi(selectedItem)
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 
@@ -59,11 +58,9 @@ class MainActivity : AppCompatActivity() {
                 when(event) {
                     is MainViewModel.CurrencyEvent.SuccessResponse -> {
                         // checking because initially we will be getting result for 1 USD for conversion
-//                        binding.progressBar.isVisible = false
                         val amount = binding.etFrom.text.toString().ifEmpty { "1.0" }
                         if (binding.etFrom.text.toString().isEmpty())
                             viewModel.convert(amountStr = amount, from = selectedItem, to = null)
-                        //updateList(event.response?.rates?.let { getRatesAsList(it) })
                     }
                     is MainViewModel.CurrencyEvent.ConnectionFailure -> {
                         binding.progressBar.isVisible = true
