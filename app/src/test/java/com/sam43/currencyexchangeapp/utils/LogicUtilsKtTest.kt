@@ -2,6 +2,7 @@ package com.sam43.currencyexchangeapp.utils
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.sam43.currencyexchangeapp.data.models.Rates
+import com.sam43.currencyexchangeapp.dummyRatesTest
 import org.junit.Assert.*
 
 import org.junit.Before
@@ -22,13 +23,7 @@ class LogicUtilsKtTest {
 
     @Before
     fun setup() {
-        rates = Rates(
-            uSD = 1,
-            bDT = 94.317,
-            cAD = 1.296,
-            eUR = 0.96,
-            gBP = 0.835
-        )
+        rates = dummyRatesTest()
     }
 
     @Test
