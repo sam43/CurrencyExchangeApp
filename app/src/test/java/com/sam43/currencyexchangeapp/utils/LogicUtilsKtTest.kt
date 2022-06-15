@@ -15,6 +15,7 @@ import org.mockito.junit.MockitoJUnitRunner
 class LogicUtilsKtTest {
 
     private lateinit var rates: Rates
+    private var defaultAmount: Double = 1.0
 
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -114,8 +115,35 @@ class LogicUtilsKtTest {
         val to = "BDT"
         val amount = 25.893
         val convertedRate = getConvertedRateAsObject(rates, amount, from, to)
-        println("Converted rate from $from to $to is: $convertedRate")
-        println("Converted amount calculated rate from ${amount * getRateForCurrency(to, rates)!!}")
         assertTrue(convertedRate == (amount * getRateForCurrency(to, rates)!!))
     }
+
+    @Test(expected=NullPointerException::class)
+    fun `convert currencies using amount, return failed if amount is null`() {
+        val from = "USD"
+        val to = "BDT"
+        val convertedRate = getConvertedRateAsObject(rates, null, from, to)
+        fail("Getting Null pointer exception for having 'null' amount in params, with final value = $convertedRate")
+    }
+
+    @Test
+    fun `convert currencies using amount, return failed if amount is not provided`() {
+        val from = "USD"
+        val to = "BDT"
+        val convertedRate = getConvertedRateAsObject(rates = rates, from = from, to = to)
+        // as the amount is not provided, so that we use the default value "1.0" as per calculation
+        assertTrue(convertedRate == rates.bDT)
+    }
+
+    @Test
+    fun `creation of currency list by default amount, return success if to is null then list is not null or empty`() =
+        assertTrue(!getRatesAsList(rates = rates, from = "USD").isNullOrEmpty())
+
+    @Test
+    fun `creation of currency list by provided amount, return success if list is not empty`() =
+        assertTrue(!getRatesAsList(rates = rates, amount = 25.9056, from = "USD").isNullOrEmpty())
+
+    @Test
+    fun `creation of currency list by provided amount but empty 'from' value provided, return success if list is empty`() =
+        assertTrue(getRatesAsList(rates = rates, amount = 25.9056, "").isNullOrEmpty())
 }
