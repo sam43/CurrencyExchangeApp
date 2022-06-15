@@ -8,6 +8,7 @@ import com.sam43.currencyexchangeapp.data.models.Rates
 import com.sam43.currencyexchangeapp.data.remote.CurrencyResponseDto
 import com.sam43.currencyexchangeapp.data.remote.RatesDto
 import com.sam43.currencyexchangeapp.dummyRatesAndroidTest
+import com.sam43.currencyexchangeapp.dummyRatesAndroidTestDto
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,7 +45,7 @@ class RatesDaoTest {
 
     @Before
     fun setup() {
-        rates = dummyRatesAndroidTest()
+        rates = dummyRatesAndroidTestDto()
         hiltRule.inject()
         dao = database.rateDao
     }
