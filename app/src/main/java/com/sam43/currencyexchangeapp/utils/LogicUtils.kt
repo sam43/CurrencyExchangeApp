@@ -176,6 +176,7 @@ fun getConvertedRateAsObject(rates: Rates, amount: Double? = 1.0, from: String, 
     amount!! * getConvertedRate(rates, from, to)
 
 fun getRatesAsList(rates: Rates, amount: Double? = 1.0, from: String): MutableList<CurrencyRateItem> {
+    if (from.isEmpty()) return mutableListOf()
     return mutableListOf(
         CurrencyRateItem(
             country = "CAD",
