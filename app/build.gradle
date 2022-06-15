@@ -24,7 +24,7 @@ android {
         buildConfigField("String", "APP_ID", secretProperty['APP_ID'])
 
         // Create own/custom application suite for HiltProject
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.sam43.currencyexchangeapp.HiltTestRunner"
     }
     
     buildFeatures {
@@ -113,9 +113,14 @@ dependencies {
     testImplementation "org.mockito:mockito-core:$androidXMockitoVersion"
     testImplementation("org.mockito:mockito-inline:$androidXMockitoVersion")
     //For runBlockingTest, CoroutineDispatcher etc.
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1'
 
     // Instrument test dependencies
+
+    androidTestImplementation 'com.google.dagger:hilt-android-testing:2.40.5'
+    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.38.1'
+    //For runBlockingTest, CoroutineDispatcher etc.
+    androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.ext:truth:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

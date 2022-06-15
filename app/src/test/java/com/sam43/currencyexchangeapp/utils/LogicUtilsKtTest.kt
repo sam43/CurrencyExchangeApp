@@ -28,8 +28,6 @@ class LogicUtilsKtTest {
             cAD = 1.296,
             eUR = 0.96,
             gBP = 0.835
-
-
         )
     }
 
