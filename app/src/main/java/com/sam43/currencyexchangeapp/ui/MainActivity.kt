@@ -2,6 +2,8 @@ package com.sam43.currencyexchangeapp.ui
 
 import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
@@ -10,14 +12,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.test.core.app.ActivityScenario.launch
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.databinding.ActivityMainBinding
+import com.sam43.currencyexchangeapp.network.ApiConstants.DEFAULT_CURRENCY
+import com.sam43.currencyexchangeapp.network.ApiConstants.DEFAULT_VALUE
+import com.sam43.currencyexchangeapp.network.ApiConstants.INTERNET_CONNECTION_ERROR
+import com.sam43.currencyexchangeapp.network.ConnectivityCheckerViewModel
+import com.sam43.currencyexchangeapp.network.ConnectivityState
 import com.sam43.currencyexchangeapp.repository.MainViewModel
 import com.sam43.currencyexchangeapp.ui.adapter.RecyclerViewAdapter
-import com.sam43.currencyexchangeapp.utils.ConnectionLiveData
 import com.sam43.currencyexchangeapp.utils.showLongToast
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -25,10 +35,10 @@ class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdapter: RecyclerViewAdapter
-    private var selectedItem: String = defaultCurrency
+    private var selectedItem: String = DEFAULT_CURRENCY
 
     private val viewModel: MainViewModel by viewModels()
-    private val connectionLiveData: ConnectionLiveData by lazy { ConnectionLiveData(this) }
+    private val connectivityViewModel: ConnectivityCheckerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +49,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
+        binding.etFrom.setText(DEFAULT_VALUE)
+        textWatcherImpl()
         binding.rvGridView.layoutManager = GridLayoutManager(this,3)
         binding.spFromCurrency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, id: Long) {
@@ -54,22 +66,43 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        connectionLiveData.observeForever { isConnected ->
-            if (isConnected) {
-                viewModel.consumeRatesApi(defaultCurrency) // initialize with default value
+    private fun textWatcherImpl() {
+        val watcher = object : TextWatcher {
+            private var searchFor = ""
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val searchText = s.toString().trim()
+                if (searchText == searchFor)
+                    return
+
+                searchFor = searchText
+
+                lifecycleScope.launch(Dispatchers.Main) {
+                    delay(300)  //debounce timeOut
+                    if (searchText != searchFor)
+                        return@launch
+                    viewModel.convert(amountStr = searchFor, from = selectedItem, to = null)
+                }
             }
-            else {
-                initialCall(defaultCurrency)
-                showLongToast(internetConnectionError)
-            }
+
+            override fun afterTextChanged(s: Editable?) = Unit
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
         }
+        binding.etFrom.addTextChangedListener(watcher)
     }
 
-    override fun onDestroy() {
-        connectionLiveData.removeObservers(this)
-        super.onDestroy()
+    override fun onStart() {
+        super.onStart()
+        lifecycleScope.launchWhenStarted {
+            connectivityViewModel.connectivityState.collectLatest {
+                when (it) {
+                    ConnectivityState.ConnectionAvailable ->
+                        initialCall(DEFAULT_CURRENCY)
+                    ConnectivityState.ConnectionUnavailable ->
+                        showLongToast(INTERNET_CONNECTION_ERROR)
+                }
+            }
+        }
     }
 
     private fun observeChanges() {
@@ -117,9 +150,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initialCall(base: String) {
-        val amount = binding.etFrom.text.toString().ifEmpty { "1.0" }
-        if (binding.etFrom.text.toString().isEmpty())
+        val amount = binding.etFrom.text.toString().ifEmpty { DEFAULT_VALUE }
+        if (binding.etFrom.text.toString().isEmpty()) {
+            //viewModel.consumeRatesApi(defaultCurrency) // initialize with default value
             viewModel.convert(amountStr = amount, from = base, to = null)
+        }
     }
 
     private fun updateList(list: MutableList<CurrencyRateItem>?) {
@@ -147,11 +182,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun whenLoading(event: MainViewModel.CurrencyEvent.Loading) {
         binding.progressBar.isVisible = true
-        binding.tvResult.isVisible = false
-    }
-
-    companion object {
-        private const val defaultCurrency = "USD"
-        private const val internetConnectionError = "Couldn't reach server, check your internet connection."
+        binding.tvResult.text = event.toString().lowercase()
     }
 }

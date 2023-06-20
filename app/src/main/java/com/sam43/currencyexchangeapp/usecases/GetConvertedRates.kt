@@ -2,7 +2,7 @@ package com.sam43.currencyexchangeapp.usecases
 
 import com.sam43.currencyexchangeapp.data.local.entity.InvalidRateException
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
-import com.sam43.currencyexchangeapp.network.poller.Timer
+import com.sam43.currencyexchangeapp.network.Timer
 import com.sam43.currencyexchangeapp.repository.MainRepository
 import com.sam43.currencyexchangeapp.utils.Resource
 import kotlinx.coroutines.flow.Flow
