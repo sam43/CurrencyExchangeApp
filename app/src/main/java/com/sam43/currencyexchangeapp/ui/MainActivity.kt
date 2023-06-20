@@ -18,6 +18,7 @@ import com.sam43.currencyexchangeapp.databinding.ActivityMainBinding
 import com.sam43.currencyexchangeapp.network.ApiConstants.DEFAULT_CURRENCY
 import com.sam43.currencyexchangeapp.network.ApiConstants.DEFAULT_VALUE
 import com.sam43.currencyexchangeapp.network.ApiConstants.INTERNET_CONNECTION_ERROR
+import com.sam43.currencyexchangeapp.network.ApiConstants.LOADING
 import com.sam43.currencyexchangeapp.network.ApiConstants.WATCHER_DELAY
 import com.sam43.currencyexchangeapp.network.ConnectivityCheckerViewModel
 import com.sam43.currencyexchangeapp.network.ConnectivityState
@@ -57,7 +58,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-        binding.etFrom.setText(DEFAULT_VALUE)
         textWatcherImpl()
         binding.rvGridView.layoutManager = GridLayoutManager(this,3)
         binding.spFromCurrency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -75,6 +75,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun textWatcherImpl() {
+        binding.etFrom.setText(DEFAULT_VALUE)
         val watcher = object : TextWatcher {
             private var searchFor = ""
 
@@ -126,41 +127,21 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launchWhenStarted {
             viewModel.conversion.collectLatest { event ->
                 when(event) {
-                    is MainViewModel.CurrencyEvent.SuccessResponse -> {
-                        // checking because initially we will be getting result for 1 USD for conversion
-                        updateList(event.response?.rates?.let { getRatesAsList(it, binding.etFrom.text.toString().toDouble(), DEFAULT_CURRENCY) })
-                    }
-                    is MainViewModel.CurrencyEvent.ConnectionFailure -> whenFailedConnection(event)
+                    is MainViewModel.CurrencyEvent.SuccessResponse -> updateList(event.response?.rates?.let { getRatesAsList(it, binding.etFrom.text.toString().toDouble(), DEFAULT_CURRENCY) })
                     is MainViewModel.CurrencyEvent.Failure -> whenFailed(event)
-                    is MainViewModel.CurrencyEvent.Loading -> whenLoading()
-                    else -> Log.d(
-                        TAG,
-                        "onCreate() called with: event = $event"
-                    )
+                    else -> whenLoading()
                 }
             }
         }
         lifecycleScope.launchWhenStarted {
             viewModel.conversionRates.collectLatest { event ->
                 when(event) {
-                    is MainViewModel.CurrencyEvent.Loading -> whenLoading()
+                    is MainViewModel.CurrencyEvent.SuccessListResponse<*> -> updateList(event.list as ArrayList<CurrencyRateItem>)
                     is MainViewModel.CurrencyEvent.Failure -> whenFailed(event)
-                    is MainViewModel.CurrencyEvent.SuccessListResponse<*> -> {
-                        updateList(event.list as ArrayList<CurrencyRateItem>)
-                    }
-                    else -> Log.d(
-                        TAG,
-                        "onCreate() called with: event = $event"
-                    )
+                    else -> whenLoading()
                 }
             }
         }
-    }
-
-    private fun whenFailedConnection(event: MainViewModel.CurrencyEvent.ConnectionFailure) {
-        binding.progressBar.isVisible = true
-        binding.tvResult.isVisible = false
-        showLongToast(event.errorText)
     }
 
     private fun initialCall(amount: String = binding.etFrom.text.toString().ifEmpty { DEFAULT_VALUE } , base: String = DEFAULT_CURRENCY) {
@@ -180,17 +161,18 @@ class MainActivity : AppCompatActivity() {
     private fun whenFailed(event: MainViewModel.CurrencyEvent.Failure) {
         binding.progressBar.isVisible = false
         binding.tvResult.isVisible = true
-        defaultView(event.errorText, Color.RED)
+        Log.d(TAG, "whenFailed: msg: ${event.errorText}")
     }
 
-    private fun defaultView(text: String, color: Int) {
+    private fun defaultView(text: String = LOADING, color: Int) {
         binding.tvResult.isVisible = true
-        binding.tvResult.setTextColor(color)
         binding.tvResult.text = text
+        binding.tvResult.setTextColor(color)
     }
 
     private fun whenLoading() {
         binding.progressBar.isVisible = true
-        binding.tvResult.isVisible = false
+        binding.tvResult.isVisible = true
+        defaultView(LOADING, Color.DKGRAY)
     }
 }
