@@ -26,7 +26,7 @@ class DefaultMainRepository @Inject constructor(
             emit(Resource.Loading(data = it))
         }
         try {
-            val remoteRateInfo = base.let { api.getRates(it) }
+            val remoteRateInfo = api.getRates()
             remoteRateInfo.body()?.toCurrencyInfoEntity()?.let {
                 dao.insertRateInfos(it)
             }

@@ -13,7 +13,7 @@ import com.sam43.currencyexchangeapp.data.local.AppDB
 import com.sam43.currencyexchangeapp.data.local.RateDao
 import com.sam43.currencyexchangeapp.data.local.entity.Converters
 import com.sam43.currencyexchangeapp.network.CurrencyApi
-import com.sam43.currencyexchangeapp.network.poller.Timer
+import com.sam43.currencyexchangeapp.network.Timer
 import com.sam43.currencyexchangeapp.repository.DefaultMainRepository
 import com.sam43.currencyexchangeapp.repository.MainRepository
 import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
@@ -57,7 +57,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideNoteUseCases(repository: MainRepository, timer: Timer): ConversionUseCases {
+    fun provideConversionUseCases(repository: MainRepository, timer: Timer): ConversionUseCases {
         return ConversionUseCases(
             getRates = GetRates(repository, timer),
             getConvertedRates = GetConvertedRates(repository, timer)
@@ -82,9 +82,9 @@ object AppModule {
         headerInterceptor: Interceptor,
     ): OkHttpClient {
         val okHttpClientBuilder = OkHttpClient().newBuilder()
-        okHttpClientBuilder.connectTimeout(30L, TimeUnit.SECONDS)
-        okHttpClientBuilder.readTimeout(30L, TimeUnit.SECONDS)
-        okHttpClientBuilder.writeTimeout(30L, TimeUnit.SECONDS)
+        okHttpClientBuilder.connectTimeout(10L, TimeUnit.SECONDS)
+        okHttpClientBuilder.readTimeout(10L, TimeUnit.SECONDS)
+        okHttpClientBuilder.writeTimeout(10L, TimeUnit.SECONDS)
         okHttpClientBuilder.addInterceptor(headerInterceptor)
         if (BuildConfig.DEBUG) {
             okHttpClientBuilder.addInterceptor(loggingInterceptor)

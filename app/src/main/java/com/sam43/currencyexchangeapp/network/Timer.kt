@@ -1,4 +1,4 @@
-package com.sam43.currencyexchangeapp.network.poller
+package com.sam43.currencyexchangeapp.network
 
 import android.util.Log
 import com.sam43.currencyexchangeapp.CurrencyApplication
@@ -7,6 +7,7 @@ import com.sam43.currencyexchangeapp.utils.DispatcherProvider
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
+@Deprecated("Currently using kotlin extension for the periodic api call")
 class Timer @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
     private val repository: MainRepository,

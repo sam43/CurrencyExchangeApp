@@ -2,10 +2,9 @@ package com.sam43.currencyexchangeapp.repository
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.sam43.currencyexchangeapp.MainCoroutineRule
-import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.data.remote.RatesDto
 import com.sam43.currencyexchangeapp.dummyRatesTestDto
-import com.sam43.currencyexchangeapp.network.poller.Timer
+import com.sam43.currencyexchangeapp.network.Timer
 import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
 import com.sam43.currencyexchangeapp.usecases.GetConvertedRates
 import com.sam43.currencyexchangeapp.usecases.GetRates
