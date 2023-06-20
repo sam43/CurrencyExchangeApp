@@ -2,6 +2,12 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="GetConvertedRatesTest.fetch latest currency data from server">
+        <State />
+      </entry>
+      <entry key="LogicUtilsKtTest">
+        <State />
+      </entry>
       <entry key="MainViewModelTest.base currency is mandatory for repository, return success if passed non-empty value">
         <State />
       </entry>

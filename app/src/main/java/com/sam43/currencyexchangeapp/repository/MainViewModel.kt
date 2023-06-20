@@ -3,7 +3,7 @@ package com.sam43.currencyexchangeapp.repository
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
-import com.sam43.currencyexchangeapp.network.ApiConstants
+import com.sam43.currencyexchangeapp.utils.AppConstants
 import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
 import com.sam43.currencyexchangeapp.utils.Resource
@@ -33,7 +33,7 @@ class MainViewModel @Inject constructor(
     private val _conversionRates = MutableStateFlow<CurrencyEvent>(CurrencyEvent.Loading)
     val conversionRates: StateFlow<CurrencyEvent> = _conversionRates
 
-    fun consumeRatesApi(base: String? = ApiConstants.DEFAULT_CURRENCY) {
+    fun consumeRatesApi(base: String? = AppConstants.DEFAULT_CURRENCY) {
         _conversion.value = CurrencyEvent.Loading
         viewModelScope.launch(dispatchers.io) {
             base?.let {
@@ -54,12 +54,12 @@ class MainViewModel @Inject constructor(
 
     fun convert(
         amountStr: String?,
-        from: String? = ApiConstants.DEFAULT_CURRENCY,
+        from: String? = AppConstants.DEFAULT_CURRENCY,
         to: String?
     ) {
         val fromAmount = amountStr?.toFloatOrNull()
         if (fromAmount == null) {
-            _conversion.value = CurrencyEvent.Failure(ApiConstants.INVALID_AMOUNT)
+            _conversion.value = CurrencyEvent.Failure(AppConstants.INVALID_AMOUNT)
             return
         }
 

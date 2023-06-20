@@ -15,11 +15,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.sam43.currencyexchangeapp.R
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.databinding.ActivityMainBinding
-import com.sam43.currencyexchangeapp.network.ApiConstants.DEFAULT_CURRENCY
-import com.sam43.currencyexchangeapp.network.ApiConstants.DEFAULT_VALUE
-import com.sam43.currencyexchangeapp.network.ApiConstants.INTERNET_CONNECTION_ERROR
-import com.sam43.currencyexchangeapp.network.ApiConstants.LOADING
-import com.sam43.currencyexchangeapp.network.ApiConstants.WATCHER_DELAY
+import com.sam43.currencyexchangeapp.utils.AppConstants.DEFAULT_CURRENCY
+import com.sam43.currencyexchangeapp.utils.AppConstants.DEFAULT_VALUE
+import com.sam43.currencyexchangeapp.utils.AppConstants.INTERNET_CONNECTION_ERROR
+import com.sam43.currencyexchangeapp.utils.AppConstants.LOADING
+import com.sam43.currencyexchangeapp.utils.AppConstants.WATCHER_DELAY
 import com.sam43.currencyexchangeapp.network.ConnectivityCheckerViewModel
 import com.sam43.currencyexchangeapp.network.ConnectivityState
 import com.sam43.currencyexchangeapp.network.tickerFlow
