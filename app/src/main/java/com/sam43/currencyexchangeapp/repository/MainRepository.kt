@@ -1,6 +1,5 @@
 package com.sam43.currencyexchangeapp.repository
 
-import android.util.Log
 import com.sam43.currencyexchangeapp.data.local.RateDao
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
@@ -52,7 +51,6 @@ class MainRepository @Inject constructor(
             try {
                 val rates = dao.getRatesOffline()?.rates
                 val rateList = rates?.let { getRatesAsList(it, amountStr.toDouble(), from) }
-                Log.d("CONVERT_MONEY", "getConvertedRates() called : ${rateList.toString()}")
                 emit(Resource.Success(data = rateList!!))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message.toString()))

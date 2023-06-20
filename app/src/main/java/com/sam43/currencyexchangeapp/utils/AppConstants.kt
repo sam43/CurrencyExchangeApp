@@ -1,6 +1,6 @@
-package com.sam43.currencyexchangeapp.network
+package com.sam43.currencyexchangeapp.utils
 
-object ApiConstants {
+object AppConstants {
     const val INVALID_AMOUNT: String = "Not a valid amount"
     const val LOADING = "Loading..."
     const val DEFAULT_CURRENCY = "USD"

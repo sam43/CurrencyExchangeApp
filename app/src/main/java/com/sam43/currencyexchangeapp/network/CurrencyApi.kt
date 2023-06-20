@@ -1,18 +1,15 @@
 package com.sam43.currencyexchangeapp.network
 
-import com.sam43.currencyexchangeapp.BuildConfig
-import com.sam43.currencyexchangeapp.data.models.ConversionResponse
-import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.data.remote.CurrencyResponseDto
+import com.sam43.currencyexchangeapp.utils.AppConstants
 import retrofit2.Response
 import retrofit2.http.GET
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface CurrencyApi {
     @GET("latest.json")
     suspend fun getRates(
-        @Query("base") base: String = ApiConstants.DEFAULT_CURRENCY
+        @Query("base") base: String = AppConstants.DEFAULT_CURRENCY
     ): Response<CurrencyResponseDto>
 
     // Currency exchange using server (Not allowed)

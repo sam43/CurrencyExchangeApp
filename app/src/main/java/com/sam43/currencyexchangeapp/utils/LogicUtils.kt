@@ -179,29 +179,29 @@ fun getRatesAsList(rates: Rates, amount: Double? = 1.0, from: String): MutableLi
     if (from.isEmpty()) return mutableListOf()
     return mutableListOf(
         CurrencyRateItem(
-            country = "CAD",
-            currency = (amount!! * getConvertedRate(rates, from, "CAD")).to3decimalPoint()
+            currency = "CAD",
+            value = (amount!! * getConvertedRate(rates, from, "CAD")).to3decimalPoint()
         ),
-        CurrencyRateItem(country = "HKD", currency = (amount * getConvertedRate(rates, from, "HKD")).to3decimalPoint()),
-        CurrencyRateItem(country = "BDT", currency = (amount * getConvertedRate(rates, from, "BDT")).to3decimalPoint()),
-        CurrencyRateItem(country = "EUR", currency = (amount * getConvertedRate(rates, from, "EUR")).to3decimalPoint()),
-        CurrencyRateItem(country = "KWD", currency = (amount * getConvertedRate(rates, from, "KWD")).to3decimalPoint()),
-        CurrencyRateItem(country = "CNH", currency = (amount * getConvertedRate(rates, from, "CNH")).to3decimalPoint()),
-        CurrencyRateItem(country = "USD", currency = (amount * getConvertedRate(rates, from, "USD")).to3decimalPoint()),
-        CurrencyRateItem(country = "BTC", currency = (amount * getConvertedRate(rates, from, "BTC")).to3decimalPoint()),
-        CurrencyRateItem(country = "GBP", currency = (amount * getConvertedRate(rates, from, "GBP")).to3decimalPoint()),
-        CurrencyRateItem(country = "SGD", currency = (amount * getConvertedRate(rates, from, "SGD")).to3decimalPoint()),
-        CurrencyRateItem(country = "NZD", currency = (amount * getConvertedRate(rates, from, "NZD")).to3decimalPoint()),
-        CurrencyRateItem(country = "INR", currency = (amount * getConvertedRate(rates, from, "INR")).to3decimalPoint()),
-        CurrencyRateItem(country = "CZK", currency = (amount * getConvertedRate(rates, from, "CZK")).to3decimalPoint()),
-        CurrencyRateItem(country = "AUD", currency = (amount * getConvertedRate(rates, from, "AUD")).to3decimalPoint()),
-        CurrencyRateItem(country = "RON", currency = (amount * getConvertedRate(rates, from, "RON")).to3decimalPoint()),
-        CurrencyRateItem(country = "PHP", currency = (amount * getConvertedRate(rates, from, "PHP")).to3decimalPoint()),
-        CurrencyRateItem(country = "ISK", currency = (amount * getConvertedRate(rates, from, "ISK")).to3decimalPoint()),
-        CurrencyRateItem(country = "DKK", currency = (amount * getConvertedRate(rates, from, "DKK")).to3decimalPoint()),
-        CurrencyRateItem(country = "JPY", currency = (amount * getConvertedRate(rates, from, "JPY")).to3decimalPoint()),
-        CurrencyRateItem(country = "SEK", currency = (amount * getConvertedRate(rates, from, "SEK")).to3decimalPoint()),
-        CurrencyRateItem(country = "XPF", currency = (amount * getConvertedRate(rates, from, "XPF")).to3decimalPoint()),
-        CurrencyRateItem(country = "XPT", currency = (amount * getConvertedRate(rates, from, "XPT")).to3decimalPoint())
+        CurrencyRateItem(currency = "BDT", value = (amount * getConvertedRate(rates, from, "BDT")).to3decimalPoint()),
+        CurrencyRateItem(currency = "EUR", value = (amount * getConvertedRate(rates, from, "EUR")).to3decimalPoint()),
+        CurrencyRateItem(currency = "KWD", value = (amount * getConvertedRate(rates, from, "KWD")).to3decimalPoint()),
+        CurrencyRateItem(currency = "JPY", value = (amount * getConvertedRate(rates, from, "JPY")).to3decimalPoint()),
+        CurrencyRateItem(currency = "CNH", value = (amount * getConvertedRate(rates, from, "CNH")).to3decimalPoint()),
+        CurrencyRateItem(currency = "USD", value = (amount * getConvertedRate(rates, from, "USD")).to3decimalPoint()),
+        CurrencyRateItem(currency = "BTC", value = (amount * getConvertedRate(rates, from, "BTC")).to3decimalPoint()),
+        CurrencyRateItem(currency = "GBP", value = (amount * getConvertedRate(rates, from, "GBP")).to3decimalPoint()),
+        CurrencyRateItem(currency = "SGD", value = (amount * getConvertedRate(rates, from, "SGD")).to3decimalPoint()),
+        CurrencyRateItem(currency = "INR", value = (amount * getConvertedRate(rates, from, "INR")).to3decimalPoint()),
+        CurrencyRateItem(currency = "AUD", value = (amount * getConvertedRate(rates, from, "AUD")).to3decimalPoint()),
+        CurrencyRateItem(currency = "NZD", value = (amount * getConvertedRate(rates, from, "NZD")).to3decimalPoint()),
+        CurrencyRateItem(currency = "CZK", value = (amount * getConvertedRate(rates, from, "CZK")).to3decimalPoint()),
+        CurrencyRateItem(currency = "RON", value = (amount * getConvertedRate(rates, from, "RON")).to3decimalPoint()),
+        CurrencyRateItem(currency = "PHP", value = (amount * getConvertedRate(rates, from, "PHP")).to3decimalPoint()),
+        CurrencyRateItem(currency = "HKD", value = (amount * getConvertedRate(rates, from, "HKD")).to3decimalPoint()),
+        CurrencyRateItem(currency = "ISK", value = (amount * getConvertedRate(rates, from, "ISK")).to3decimalPoint()),
+        CurrencyRateItem(currency = "DKK", value = (amount * getConvertedRate(rates, from, "DKK")).to3decimalPoint()),
+        CurrencyRateItem(currency = "SEK", value = (amount * getConvertedRate(rates, from, "SEK")).to3decimalPoint()),
+        CurrencyRateItem(currency = "XPF", value = (amount * getConvertedRate(rates, from, "XPF")).to3decimalPoint()),
+        CurrencyRateItem(currency = "XPT", value = (amount * getConvertedRate(rates, from, "XPT")).to3decimalPoint())
     )
 }
