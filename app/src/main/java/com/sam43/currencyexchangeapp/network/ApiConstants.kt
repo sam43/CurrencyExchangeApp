@@ -4,7 +4,7 @@ object ApiConstants {
     const val INVALID_AMOUNT: String = "Not a valid amount"
     const val DEFAULT_CURRENCY = "USD"
     const val DEFAULT_VALUE = "1.0"
-    const val WATCHER_DELAY = 500L
+    const val WATCHER_DELAY = 300L
     const val INTERNET_CONNECTION_ERROR = "Couldn't reach server, check your internet connection."
 
 }

@@ -58,7 +58,7 @@ class MainViewModel @Inject constructor(
 
     fun convert(
         amountStr: String?,
-        from: String? = "USD",
+        from: String? = ApiConstants.DEFAULT_CURRENCY,
         to: String?
     ) {
         val fromAmount = amountStr?.toFloatOrNull()

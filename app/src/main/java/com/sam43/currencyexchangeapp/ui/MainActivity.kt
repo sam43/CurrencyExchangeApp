@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.test.core.app.ActivityScenario.launch
 import com.sam43.currencyexchangeapp.R
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.databinding.ActivityMainBinding
@@ -22,6 +21,7 @@ import com.sam43.currencyexchangeapp.network.ApiConstants.INTERNET_CONNECTION_ER
 import com.sam43.currencyexchangeapp.network.ApiConstants.WATCHER_DELAY
 import com.sam43.currencyexchangeapp.network.ConnectivityCheckerViewModel
 import com.sam43.currencyexchangeapp.network.ConnectivityState
+import com.sam43.currencyexchangeapp.network.tickerFlow
 import com.sam43.currencyexchangeapp.repository.MainViewModel
 import com.sam43.currencyexchangeapp.ui.adapter.RecyclerViewAdapter
 import com.sam43.currencyexchangeapp.utils.getRatesAsList
@@ -30,11 +30,16 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import kotlin.time.Duration.Companion.minutes
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private var isSucceededOnce: Boolean = false
     private val TAG = "MainActivity"
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdapter: RecyclerViewAdapter
@@ -100,8 +105,15 @@ class MainActivity : AppCompatActivity() {
             connectivityViewModel.connectivityState.collectLatest {
                 Log.d(TAG, "onStart: networkStatus: $it")
                 when (it) {
-                    ConnectivityState.ConnectionAvailable ->
-                        initialCall()
+                    ConnectivityState.ConnectionAvailable -> {
+                        tickerFlow(30.minutes)
+                            .map { LocalDateTime.now() }
+                            .distinctUntilChanged { old, new ->
+                                old.minute == new.minute
+                            }
+                            .onEach { initialCall() }
+                            .launchIn(this)
+                    }
                     ConnectivityState.ConnectionUnavailable ->
                         showLongToast(INTERNET_CONNECTION_ERROR)
                 }
@@ -116,8 +128,6 @@ class MainActivity : AppCompatActivity() {
                 when(event) {
                     is MainViewModel.CurrencyEvent.SuccessResponse -> {
                         // checking because initially we will be getting result for 1 USD for conversion
-                        initialCall(selectedItem)
-                        isSucceededOnce = true
                         updateList(event.response?.rates?.let { getRatesAsList(it, binding.etFrom.text.toString().toDouble(), DEFAULT_CURRENCY) })
                     }
                     is MainViewModel.CurrencyEvent.ConnectionFailure -> whenFailedConnection(event)
@@ -153,8 +163,7 @@ class MainActivity : AppCompatActivity() {
         showLongToast(event.errorText)
     }
 
-    private fun initialCall(base: String = DEFAULT_CURRENCY) {
-        val amount = binding.etFrom.text.toString().ifEmpty { DEFAULT_VALUE }
+    private fun initialCall(amount: String = binding.etFrom.text.toString().ifEmpty { DEFAULT_VALUE } , base: String = DEFAULT_CURRENCY) {
         viewModel.consumeRatesApi(base) // initialize with default value
         viewModel.convert(amountStr = amount, from = base, to = null)
     }
