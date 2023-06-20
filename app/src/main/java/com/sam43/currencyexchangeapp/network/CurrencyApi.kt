@@ -15,9 +15,7 @@ interface CurrencyApi {
         @Query("base") base: String = ApiConstants.DEFAULT_CURRENCY
     ): Response<CurrencyResponseDto>
 
-    // Currency exchange using server
-    // From doc: The /consumeAllRatesByBase API is offered to save time in integration,
-    // but does not imply any difference in accuracy, validity or fitness for purpose from the data that can be obtained with any other API request.
+    // Currency exchange using server (Not allowed)
 //    @GET("convert/{value}/{from}/{to}")
 //    suspend fun convertCurrency(
 //        @Path("value") amount: String,

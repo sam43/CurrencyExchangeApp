@@ -3,6 +3,7 @@ package com.sam43.currencyexchangeapp.repository
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
+import com.sam43.currencyexchangeapp.network.ApiConstants
 import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
 import com.sam43.currencyexchangeapp.utils.Resource
@@ -34,7 +35,7 @@ class MainViewModel @Inject constructor(
     private val _conversionRates = MutableStateFlow<CurrencyEvent>(CurrencyEvent.Empty)
     val conversionRates: StateFlow<CurrencyEvent> = _conversionRates
 
-    fun consumeRatesApi(base: String? = "USD") {
+    fun consumeRatesApi(base: String? = ApiConstants.DEFAULT_CURRENCY) {
         _conversion.value = CurrencyEvent.Loading
         viewModelScope.launch(dispatchers.io) {
             base?.let {
@@ -44,9 +45,9 @@ class MainViewModel @Inject constructor(
                             is Resource.Loading -> _conversion.value =
                                 CurrencyEvent.Loading
                             is Resource.NoInternet -> _conversion.value =
-                                CurrencyEvent.ConnectionFailure(response.message!!)
+                                CurrencyEvent.ConnectionFailure(response.message.toString())
                             is Resource.Error -> _conversion.value =
-                                CurrencyEvent.Failure(response.message!!)
+                                CurrencyEvent.Failure(response.message.toString())
                             is Resource.Success -> _conversion.value =
                                 CurrencyEvent.SuccessResponse(response.data)
                         }
@@ -62,7 +63,7 @@ class MainViewModel @Inject constructor(
     ) {
         val fromAmount = amountStr?.toFloatOrNull()
         if (fromAmount == null) {
-            _conversion.value = CurrencyEvent.Failure("Not a valid amount")
+            _conversion.value = CurrencyEvent.Failure(ApiConstants.INVALID_AMOUNT)
             return
         }
 

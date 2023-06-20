@@ -13,15 +13,18 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.test.core.app.ActivityScenario.launch
+import com.sam43.currencyexchangeapp.R
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.databinding.ActivityMainBinding
 import com.sam43.currencyexchangeapp.network.ApiConstants.DEFAULT_CURRENCY
 import com.sam43.currencyexchangeapp.network.ApiConstants.DEFAULT_VALUE
 import com.sam43.currencyexchangeapp.network.ApiConstants.INTERNET_CONNECTION_ERROR
+import com.sam43.currencyexchangeapp.network.ApiConstants.WATCHER_DELAY
 import com.sam43.currencyexchangeapp.network.ConnectivityCheckerViewModel
 import com.sam43.currencyexchangeapp.network.ConnectivityState
 import com.sam43.currencyexchangeapp.repository.MainViewModel
 import com.sam43.currencyexchangeapp.ui.adapter.RecyclerViewAdapter
+import com.sam43.currencyexchangeapp.utils.getRatesAsList
 import com.sam43.currencyexchangeapp.utils.showLongToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -78,7 +81,7 @@ class MainActivity : AppCompatActivity() {
                 searchFor = searchText
 
                 lifecycleScope.launch(Dispatchers.Main) {
-                    delay(300)  //debounce timeOut
+                    delay(WATCHER_DELAY)
                     if (searchText != searchFor)
                         return@launch
                     viewModel.convert(amountStr = searchFor, from = selectedItem, to = null)
@@ -95,9 +98,10 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         lifecycleScope.launchWhenStarted {
             connectivityViewModel.connectivityState.collectLatest {
+                Log.d(TAG, "onStart: networkStatus: $it")
                 when (it) {
                     ConnectivityState.ConnectionAvailable ->
-                        initialCall(DEFAULT_CURRENCY)
+                        initialCall()
                     ConnectivityState.ConnectionUnavailable ->
                         showLongToast(INTERNET_CONNECTION_ERROR)
                 }
@@ -105,6 +109,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun observeChanges() {
         lifecycleScope.launchWhenStarted {
             viewModel.conversion.collectLatest { event ->
@@ -113,11 +118,11 @@ class MainActivity : AppCompatActivity() {
                         // checking because initially we will be getting result for 1 USD for conversion
                         initialCall(selectedItem)
                         isSucceededOnce = true
-                        //updateList(event.response?.rates?.let { getRatesAsList(it, amount.toDouble(), "USD") })
+                        updateList(event.response?.rates?.let { getRatesAsList(it, binding.etFrom.text.toString().toDouble(), DEFAULT_CURRENCY) })
                     }
                     is MainViewModel.CurrencyEvent.ConnectionFailure -> whenFailedConnection(event)
                     is MainViewModel.CurrencyEvent.Failure -> whenFailed(event)
-                    is MainViewModel.CurrencyEvent.Loading -> whenLoading(event)
+                    is MainViewModel.CurrencyEvent.Loading -> whenLoading()
                     else -> Log.d(
                         TAG,
                         "onCreate() called with: event = $event"
@@ -128,10 +133,9 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launchWhenStarted {
             viewModel.conversionRates.collectLatest { event ->
                 when(event) {
-                    is MainViewModel.CurrencyEvent.Loading -> whenLoading(event)
+                    is MainViewModel.CurrencyEvent.Loading -> whenLoading()
                     is MainViewModel.CurrencyEvent.Failure -> whenFailed(event)
                     is MainViewModel.CurrencyEvent.SuccessListResponse<*> -> {
-                        @Suppress("UNCHECKED_CAST")
                         updateList(event.list as ArrayList<CurrencyRateItem>)
                     }
                     else -> Log.d(
@@ -149,23 +153,19 @@ class MainActivity : AppCompatActivity() {
         showLongToast(event.errorText)
     }
 
-    private fun initialCall(base: String) {
+    private fun initialCall(base: String = DEFAULT_CURRENCY) {
         val amount = binding.etFrom.text.toString().ifEmpty { DEFAULT_VALUE }
-        if (binding.etFrom.text.toString().isEmpty()) {
-            //viewModel.consumeRatesApi(defaultCurrency) // initialize with default value
-            viewModel.convert(amountStr = amount, from = base, to = null)
-        }
+        viewModel.consumeRatesApi(base) // initialize with default value
+        viewModel.convert(amountStr = amount, from = base, to = null)
     }
 
     private fun updateList(list: MutableList<CurrencyRateItem>?) {
         if (list.isNullOrEmpty()) return
         binding.progressBar.isVisible = false
-        @Suppress("UNCHECKED_CAST")
         mAdapter = RecyclerViewAdapter(list as ArrayList<CurrencyRateItem>)
         binding.rvGridView.adapter = mAdapter
         mAdapter.updateView()
-        if (binding.etFrom.text.toString().isEmpty())
-            defaultView("Initial BASE amount set to $selectedItem 1.0", Color.GREEN)
+        defaultView("Initial BASE amount set to $selectedItem 1.0", getColor(R.color.green_700))
     }
 
     private fun whenFailed(event: MainViewModel.CurrencyEvent.Failure) {
@@ -180,8 +180,8 @@ class MainActivity : AppCompatActivity() {
         binding.tvResult.text = text
     }
 
-    private fun whenLoading(event: MainViewModel.CurrencyEvent.Loading) {
+    private fun whenLoading() {
         binding.progressBar.isVisible = true
-        binding.tvResult.text = event.toString().lowercase()
+        binding.tvResult.isVisible = false
     }
 }
