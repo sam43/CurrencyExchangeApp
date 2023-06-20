@@ -13,7 +13,6 @@ import com.sam43.currencyexchangeapp.data.local.AppDB
 import com.sam43.currencyexchangeapp.data.local.RateDao
 import com.sam43.currencyexchangeapp.data.local.entity.Converters
 import com.sam43.currencyexchangeapp.network.CurrencyApi
-import com.sam43.currencyexchangeapp.network.Timer
 import com.sam43.currencyexchangeapp.repository.DefaultMainRepository
 import com.sam43.currencyexchangeapp.repository.MainRepository
 import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
@@ -57,10 +56,10 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideConversionUseCases(repository: MainRepository, timer: Timer): ConversionUseCases {
+    fun provideConversionUseCases(repository: MainRepository): ConversionUseCases {
         return ConversionUseCases(
-            getRates = GetRates(repository, timer),
-            getConvertedRates = GetConvertedRates(repository, timer)
+            getRates = GetRates(repository),
+            getConvertedRates = GetConvertedRates(repository)
         )
     }
 
@@ -122,10 +121,6 @@ object AppModule {
     @Provides
     fun provideMainRepository(api: CurrencyApi, dao: RateDao): MainRepository =
         DefaultMainRepository(api, dao)
-
-    @Singleton
-    @Provides
-    fun provideTimer(dispatcher: DispatcherProvider, repository: MainRepository): Timer = Timer(dispatcher, repository)
 
     @Singleton
     @Provides

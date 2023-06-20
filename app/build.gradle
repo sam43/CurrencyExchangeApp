@@ -124,4 +124,10 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:truth:1.5.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation "androidx.arch.core:core-testing:2.2.0"
+
+    def mockkVersion = "1.13.3"
+    testImplementation "io.mockk:mockk:${mockkVersion}"
+// mockK Unit Test
+    testImplementation "io.mockk:mockk-android:${mockkVersion}"
+    testImplementation "io.mockk:mockk-agent:${mockkVersion}"
 }
