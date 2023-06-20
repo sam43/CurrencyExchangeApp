@@ -1,5 +1,7 @@
 package com.sam43.currencyexchangeapp.usecases
 
-import org.junit.Assert.*
+import com.sam43.currencyexchangeapp.repository.IMainRepository
 
-class GetConvertedRatesTest
+class GetConvertedRatesTest {
+    private lateinit var repository: IMainRepository
+}

@@ -25,14 +25,12 @@ class MainViewModel @Inject constructor(
         class SuccessResponse(val response: CurrencyResponse?) : CurrencyEvent()
         class SuccessListResponse<T>(val list: MutableList<T>?) : CurrencyEvent()
         class Failure(val errorText: String) : CurrencyEvent()
-        class ConnectionFailure(val errorText: String) : CurrencyEvent()
         object Loading : CurrencyEvent()
-        object Empty : CurrencyEvent()
     }
 
-    private val _conversion = MutableStateFlow<CurrencyEvent>(CurrencyEvent.Empty)
+    private val _conversion = MutableStateFlow<CurrencyEvent>(CurrencyEvent.Loading)
     val conversion: StateFlow<CurrencyEvent> = _conversion
-    private val _conversionRates = MutableStateFlow<CurrencyEvent>(CurrencyEvent.Empty)
+    private val _conversionRates = MutableStateFlow<CurrencyEvent>(CurrencyEvent.Loading)
     val conversionRates: StateFlow<CurrencyEvent> = _conversionRates
 
     fun consumeRatesApi(base: String? = ApiConstants.DEFAULT_CURRENCY) {
@@ -44,8 +42,6 @@ class MainViewModel @Inject constructor(
                         when (response) {
                             is Resource.Loading -> _conversion.value =
                                 CurrencyEvent.Loading
-                            is Resource.NoInternet -> _conversion.value =
-                                CurrencyEvent.ConnectionFailure(response.message.toString())
                             is Resource.Error -> _conversion.value =
                                 CurrencyEvent.Failure(response.message.toString())
                             is Resource.Success -> _conversion.value =
@@ -74,8 +70,6 @@ class MainViewModel @Inject constructor(
                         when (response) {
                             is Resource.Loading -> _conversionRates.value =
                                 CurrencyEvent.Loading
-                            is Resource.NoInternet -> _conversionRates.value =
-                                CurrencyEvent.ConnectionFailure(response.message!!)
                             is Resource.Error -> _conversionRates.value =
                                 CurrencyEvent.Failure(response.message!!)
                             is Resource.Success -> _conversionRates.value =
