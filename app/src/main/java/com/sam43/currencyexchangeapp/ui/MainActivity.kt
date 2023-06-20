@@ -25,6 +25,7 @@ import com.sam43.currencyexchangeapp.network.ConnectivityState
 import com.sam43.currencyexchangeapp.network.tickerFlow
 import com.sam43.currencyexchangeapp.repository.MainViewModel
 import com.sam43.currencyexchangeapp.ui.adapter.RecyclerViewAdapter
+import com.sam43.currencyexchangeapp.utils.AppConstants.NO_VALUE
 import com.sam43.currencyexchangeapp.utils.getRatesAsList
 import com.sam43.currencyexchangeapp.utils.showLongToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,14 +64,11 @@ class MainActivity : AppCompatActivity() {
         binding.spFromCurrency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, id: Long) {
                 selectedItem = parent?.getItemAtPosition(position) as String
-                when {
-                    binding.etFrom.text.toString().trim().isNotEmpty() ->
-                        viewModel.convert(amountStr = binding.etFrom.text.toString(), from = selectedItem, to = null)
-                    else -> initialCall(selectedItem)
-                }
+                val amountValue = binding.etFrom.text.toString().ifEmpty { NO_VALUE }
+                viewModel.convert(amountStr = amountValue, from = selectedItem, to = null)
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
         }
     }
 
@@ -83,14 +81,12 @@ class MainActivity : AppCompatActivity() {
                 val searchText = s.toString().trim()
                 if (searchText == searchFor)
                     return
-
                 searchFor = searchText
-
                 lifecycleScope.launch(Dispatchers.Main) {
                     delay(WATCHER_DELAY)
                     if (searchText != searchFor)
                         return@launch
-                    viewModel.convert(amountStr = searchFor, from = selectedItem, to = null)
+                    viewModel.convert(amountStr = searchFor.ifEmpty { NO_VALUE }, from = selectedItem, to = null)
                 }
             }
 
@@ -104,7 +100,6 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         lifecycleScope.launchWhenStarted {
             connectivityViewModel.connectivityState.collectLatest {
-                Log.d(TAG, "onStart: networkStatus: $it")
                 when (it) {
                     ConnectivityState.ConnectionAvailable -> {
                         tickerFlow(30.minutes)
@@ -155,7 +150,7 @@ class MainActivity : AppCompatActivity() {
         mAdapter = RecyclerViewAdapter(list as ArrayList<CurrencyRateItem>)
         binding.rvGridView.adapter = mAdapter
         mAdapter.updateView()
-        defaultView("Initial BASE amount set to $selectedItem 1.0", getColor(R.color.green_700))
+        defaultView("Initial BASE amount set to $selectedItem", getColor(R.color.green_700))
     }
 
     private fun whenFailed(event: MainViewModel.CurrencyEvent.Failure) {
