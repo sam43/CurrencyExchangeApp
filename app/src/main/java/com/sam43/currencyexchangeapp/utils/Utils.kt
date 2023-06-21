@@ -9,6 +9,7 @@ fun Context.showLongToast(msg: String) =
 
 fun Double.to3decimalPoint(): String = String.format("%.3f", this).trimTrailingZero()
 
+fun String.to3decimalPoint(): String = String.format("%.3f", this.toDouble()).trimTrailingZero()
 
 fun String?.trimTrailingZero(): String = if (!this.isNullOrEmpty()) {
     if (this.indexOf(".") < 0) {

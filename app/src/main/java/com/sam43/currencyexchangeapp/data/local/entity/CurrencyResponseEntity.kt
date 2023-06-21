@@ -10,8 +10,8 @@ import com.sam43.currencyexchangeapp.data.models.Rates
 @Entity(tableName = "rate")
 data class CurrencyResponseEntity(
     @PrimaryKey val id: Int? = null,
-    val base: String? = "USD",
-    val rates: Rates? = Rates(),
+    val base: String = "USD",
+    val rates: Rates,
     val timestamp: Long? = 0L
 ) {
     fun toRateInfo(): CurrencyResponse = CurrencyResponse(
