@@ -14,7 +14,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -41,7 +40,7 @@ class GetConvertedRatesTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun `fetch latest currency data from server`() = runTest {
+    fun `fetch latest currency data obtained from server`() = runTest {
         val expectedRateList: MutableList<CurrencyRateItem> = mockedResponseForConversionRateList(dummyRatesTest(), amountForTest, from)
         coEvery {
             repository.getConvertedRates(amountForTest, from, to)
@@ -51,8 +50,6 @@ class GetConvertedRatesTest {
 
         val data = usecase.invoke(amountForTest, from, to)
         val list = data.last().data
-        println("fetch latest currency data from server: ${data.first()}")
-        println("fetch latest list: ${expectedRateList[0].currency}")
         assertNotNull(data.last())
         assert(data.first() is Resource.Success)
         assert(data.last() is Resource.Success)
@@ -61,9 +58,15 @@ class GetConvertedRatesTest {
         assertEquals(expectedRateList[0].currency, list?.get(0)?.currency)
         assertNotEquals(expectedRateList[1].currency, list?.get(0)?.currency)
 
-        coVerify { usecase.invoke(amountForTest, from, to) }
+        coVerify {
+            usecase.invoke(amountForTest, from, to)
+            repository.getConvertedRates(amountForTest, from, to)
+        }
+    }
 
-        coVerify { repository.getConvertedRates(amountForTest, from, to) }
-
+    @ExperimentalCoroutinesApi
+    @Test
+    fun name() {
+        TODO("Not yet implemented")
     }
 }

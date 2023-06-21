@@ -1,5 +1,6 @@
 package com.sam43.currencyexchangeapp.utils
 
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.sam43.currencyexchangeapp.data.models.Rates
 import com.sam43.currencyexchangeapp.dummyRatesTest
@@ -9,14 +10,12 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class LogicUtilsKtTest {
+class ConversionLogicUtilTest {
 
     private lateinit var rates: Rates
-    private var defaultAmount: Double = 1.0
 
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -75,7 +74,7 @@ class LogicUtilsKtTest {
     }
 
     @Test
-    fun `get converted rate from give base to expecting currency, return failed if from value is empty`() {
+    fun `get converted rate from give base to expecting currency, return failed if 'from' value is empty`() {
         val from = ""
         val to = "BDT"
         val convertedRate = getConvertedRate(rates, from, to).to3decimalPoint()
@@ -83,12 +82,10 @@ class LogicUtilsKtTest {
     }
 
     @Test
-    fun `get converted rate from give base to expecting currency, return 0 (default value) if to value is null`() {
+    fun `get converted rate from give base to expecting currency, return 0 (default value) if 'to' value is null`() {
         val from = "USD"
         val to = null
         val convertedRate = getConvertedRate(rates, from, to.toString()).to3decimalPoint()
-        println("Converted rate from $from to $to is: $convertedRate")
-        println("Converted rate from ${getRateForCurrency(to.toString(), rates)?.to3decimalPoint()}")
         assertTrue(convertedRate == getRateForCurrency(to.toString(), rates)?.to3decimalPoint())
     }
 
@@ -130,13 +127,13 @@ class LogicUtilsKtTest {
 
     @Test
     fun `creation of currency list by default amount, return success if to is null then list is not null or empty`() =
-        assertTrue(!getRatesAsList(rates = rates, from = "USD").isNullOrEmpty())
+        assertTrue(getRatesAsList(rates = rates, from = "USD").isNotEmpty())
 
     @Test
     fun `creation of currency list by provided amount, return success if list is not empty`() =
-        assertTrue(!getRatesAsList(rates = rates, amount = 25.9056, from = "USD").isNullOrEmpty())
+        assertTrue(getRatesAsList(rates = rates, amount = 25.9056, from = "USD").isNotEmpty())
 
     @Test
     fun `creation of currency list by provided amount but empty 'from' value provided, return success if list is empty`() =
-        assertTrue(getRatesAsList(rates = rates, amount = 25.9056, "").isNullOrEmpty())
+        assertTrue(getRatesAsList(rates = rates, amount = 25.9056, "").isEmpty())
 }

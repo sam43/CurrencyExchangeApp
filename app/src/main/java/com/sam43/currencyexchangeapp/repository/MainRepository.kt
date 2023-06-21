@@ -9,7 +9,6 @@ import com.sam43.currencyexchangeapp.utils.Resource
 import com.sam43.currencyexchangeapp.utils.getRatesAsList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import okio.IOException
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -23,7 +22,7 @@ class MainRepository @Inject constructor(
         // Satisfying single source of truth
         val rateInfo = dao.getRatesOffline()?.toRateInfo()
         rateInfo?.let {
-            emit(Resource.Loading(data = it))
+            emit(Resource.Success(data = it))
         }
         try {
             val remoteRateInfo = api.getRates()
@@ -59,8 +58,9 @@ class MainRepository @Inject constructor(
             emit(Resource.Loading())
             try {
                 val rates = dao.getRatesOffline()?.rates
-                val rateList = rates?.let { getRatesAsList(it, amountStr.toDouble(), from) }
-                emit(Resource.Success(data = rateList!!))
+                val rateList =
+                    rates?.let { getRatesAsList(it, amountStr.toDouble(), from) } ?: mutableListOf()
+                emit(Resource.Success(data = rateList))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message.toString()))
             }

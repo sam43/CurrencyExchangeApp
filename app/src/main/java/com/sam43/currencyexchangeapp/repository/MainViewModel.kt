@@ -3,8 +3,8 @@ package com.sam43.currencyexchangeapp.repository
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
-import com.sam43.currencyexchangeapp.utils.AppConstants
 import com.sam43.currencyexchangeapp.usecases.ConversionUseCases
+import com.sam43.currencyexchangeapp.utils.AppConstants
 import com.sam43.currencyexchangeapp.utils.DispatcherProvider
 import com.sam43.currencyexchangeapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -59,7 +59,7 @@ class MainViewModel @Inject constructor(
     ) {
         val fromAmount = amountStr?.toFloatOrNull()
         if (fromAmount == null) {
-            _conversion.value = CurrencyEvent.Failure(AppConstants.INVALID_AMOUNT)
+            _conversionRates.value = CurrencyEvent.Failure(AppConstants.INVALID_AMOUNT)
             return
         }
 

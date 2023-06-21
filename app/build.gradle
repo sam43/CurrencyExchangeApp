@@ -103,17 +103,14 @@ dependencies {
 
     def jUnitVersion = "4.13.2"
     def androidXTestVersion = "4.8.1"
-    def androidXMockitoVersion = "4.2.0"
     // Required -- JUnit 4 framework
     testImplementation "junit:junit:$jUnitVersion"
     testImplementation "androidx.arch.core:core-testing:2.2.0"
 //    // Optional -- Robolectric environment
 //    testImplementation "androidx.test:core:$androidXTestVersion"
-    // Optional -- Mockito framework
-    testImplementation "org.mockito:mockito-core:$androidXMockitoVersion"
-    testImplementation("org.mockito:mockito-inline:$androidXMockitoVersion")
     //For runBlockingTest, CoroutineDispatcher etc.
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
+    def coroutines_version = "1.6.4"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
 
     // Instrument test dependencies
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"

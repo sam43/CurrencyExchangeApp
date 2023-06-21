@@ -175,12 +175,12 @@ fun getConvertedRate(rates: Rates, from: String, to: String): Double = (1.0/(get
 fun getConvertedRateAsObject(rates: Rates, amount: Double? = 1.0, from: String, to: String): Double =
     amount!! * getConvertedRate(rates, from, to)
 
-fun getRatesAsList(rates: Rates, amount: Double? = 1.0, from: String): MutableList<CurrencyRateItem> {
+fun getRatesAsList(rates: Rates, amount: Double = 1.0, from: String): MutableList<CurrencyRateItem> {
     if (from.isEmpty()) return mutableListOf()
     return mutableListOf(
         CurrencyRateItem(
             currency = "CAD",
-            value = (amount!! * getConvertedRate(rates, from, "CAD")).to3decimalPoint()
+            value = (amount * getConvertedRate(rates, from, "CAD")).to3decimalPoint()
         ),
         CurrencyRateItem(currency = "BDT", value = (amount * getConvertedRate(rates, from, "BDT")).to3decimalPoint()),
         CurrencyRateItem(currency = "EUR", value = (amount * getConvertedRate(rates, from, "EUR")).to3decimalPoint()),
