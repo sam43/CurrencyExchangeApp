@@ -15,18 +15,19 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.sam43.currencyexchangeapp.R
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.databinding.ActivityMainBinding
-import com.sam43.currencyexchangeapp.utils.AppConstants.DEFAULT_CURRENCY
-import com.sam43.currencyexchangeapp.utils.AppConstants.DEFAULT_VALUE
-import com.sam43.currencyexchangeapp.utils.AppConstants.INTERNET_CONNECTION_ERROR
-import com.sam43.currencyexchangeapp.utils.AppConstants.LOADING
-import com.sam43.currencyexchangeapp.utils.AppConstants.WATCHER_DELAY
 import com.sam43.currencyexchangeapp.network.ConnectivityCheckerViewModel
 import com.sam43.currencyexchangeapp.network.ConnectivityState
 import com.sam43.currencyexchangeapp.network.tickerFlow
 import com.sam43.currencyexchangeapp.repository.MainViewModel
 import com.sam43.currencyexchangeapp.ui.adapter.RecyclerViewAdapter
+import com.sam43.currencyexchangeapp.utils.AppConstants.DEFAULT_CURRENCY
+import com.sam43.currencyexchangeapp.utils.AppConstants.DEFAULT_VALUE
+import com.sam43.currencyexchangeapp.utils.AppConstants.INTERNET_CONNECTION_ERROR
+import com.sam43.currencyexchangeapp.utils.AppConstants.LOADING
 import com.sam43.currencyexchangeapp.utils.AppConstants.NO_VALUE
-import com.sam43.currencyexchangeapp.utils.getRatesAsList
+import com.sam43.currencyexchangeapp.utils.AppConstants.WATCHER_DELAY
+import com.sam43.currencyexchangeapp.utils.asMap
+import com.sam43.currencyexchangeapp.utils.fetchRatesAsList
 import com.sam43.currencyexchangeapp.utils.showLongToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -122,7 +123,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launchWhenStarted {
             viewModel.conversion.collectLatest { event ->
                 when(event) {
-                    is MainViewModel.CurrencyEvent.SuccessResponse -> updateList(event.response?.rates?.let { getRatesAsList(it, binding.etFrom.text.toString().toDouble(), DEFAULT_CURRENCY) })
+                    is MainViewModel.CurrencyEvent.SuccessResponse -> updateList(event.response?.rates?.let { fetchRatesAsList(it.asMap(), it, binding.etFrom.text.toString().toDouble(), DEFAULT_CURRENCY) })
                     is MainViewModel.CurrencyEvent.Failure -> whenFailed(event)
                     else -> whenLoading()
                 }

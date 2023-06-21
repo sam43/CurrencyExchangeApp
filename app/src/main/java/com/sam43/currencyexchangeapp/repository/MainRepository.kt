@@ -1,12 +1,14 @@
 package com.sam43.currencyexchangeapp.repository
 
+import android.util.Log
 import com.sam43.currencyexchangeapp.data.local.RateDao
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.network.CurrencyApi
 import com.sam43.currencyexchangeapp.utils.AppConstants
 import com.sam43.currencyexchangeapp.utils.Resource
-import com.sam43.currencyexchangeapp.utils.getRatesAsList
+import com.sam43.currencyexchangeapp.utils.asMap
+import com.sam43.currencyexchangeapp.utils.fetchRatesAsList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -26,6 +28,7 @@ class MainRepository @Inject constructor(
         }
         try {
             val remoteRateInfo = api.getRates()
+            Log.d("IMainRepository", "getRatesOffline: ${remoteRateInfo.body()?.rates}")
             remoteRateInfo.body()?.toCurrencyInfoEntity()?.let {
                 dao.insertRateInfos(it)
             }
@@ -59,7 +62,7 @@ class MainRepository @Inject constructor(
             try {
                 val rates = dao.getRatesOffline()?.rates
                 val rateList =
-                    rates?.let { getRatesAsList(it, amountStr.toDouble(), from) } ?: mutableListOf()
+                    rates?.let { fetchRatesAsList(it.asMap(), it, amountStr.toDouble(), from) } ?: mutableListOf()
                 emit(Resource.Success(data = rateList))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message.toString()))
