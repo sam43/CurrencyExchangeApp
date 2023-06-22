@@ -6,6 +6,8 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.google.gson.Gson
 import com.localebro.okhttpprofiler.OkHttpProfilerInterceptor
 import com.sam43.currencyexchangeapp.BuildConfig
@@ -35,17 +37,24 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
+
 @InstallIn(SingletonComponent::class)
 @Module
 object AppModule {
     @Provides
     @Singleton
     fun provideAppDatabase(app: Application): AppDB {
+        val MIGRATION_1_2: Migration = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE 'rate' ADD COLUMN 'id' INTEGER")
+            }
+        }
         return Room.databaseBuilder(
             app,
             AppDB::class.java,
             AppDB.DATABASE_NAME
         )
+            .addMigrations(MIGRATION_1_2)
             .addTypeConverter(Converters(GsonParser(Gson())))
             .build()
     }
