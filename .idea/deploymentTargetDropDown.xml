@@ -2,10 +2,10 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="ConversionLogicUtilTest">
+      <entry key="MainActivityTest">
         <State />
       </entry>
-      <entry key="MainActivityTest">
+      <entry key="Tests in 'com.sam43.currencyexchangeapp'">
         <State />
       </entry>
       <entry key="app">
@@ -21,16 +21,13 @@
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2023-06-18T13:12:59.048284Z" />
+          <timeTargetWasSelectedWithDropDown value="2023-06-22T18:16:38.471411Z" />
         </State>
       </entry>
       <entry key="check_if_an_bdt_value_exists_in_recyclerview()">
         <State />
       </entry>
       <entry key="check_if_an_item_value_exists_in_recyclerview()">
-        <State />
-      </entry>
-      <entry key="insertExchangeRateItem_ReturnSuccess_If_matches_DB_item()">
         <State />
       </entry>
     </value>
