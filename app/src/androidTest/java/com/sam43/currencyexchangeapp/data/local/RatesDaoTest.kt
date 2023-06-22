@@ -1,33 +1,36 @@
 package com.sam43.currencyexchangeapp.data.local
 
+import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import com.google.common.truth.Truth.assertThat
 import com.sam43.currencyexchangeapp.TestDispatcherProvider
 import com.sam43.currencyexchangeapp.data.db.AppDB
-import com.sam43.currencyexchangeapp.data.db.AppDBTest
 import com.sam43.currencyexchangeapp.data.local.dao.RateDao
 import com.sam43.currencyexchangeapp.data.models.Rates
 import com.sam43.currencyexchangeapp.data.remote.CurrencyResponseDto
 import com.sam43.currencyexchangeapp.dummyRatesAndroidTest
+import com.sam43.currencyexchangeapp.getOrAwaitValue
 import com.sam43.currencyexchangeapp.utils.AppConstants
-import com.sam43.currencyexchangeapp.utils.asMap
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import okio.IOException
 import org.junit.After
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import javax.inject.Inject
+import org.junit.runner.RunWith
 import kotlin.coroutines.CoroutineContext
 
 @ExperimentalCoroutinesApi
+@RunWith(AndroidJUnit4::class)
 @SmallTest
 @HiltAndroidTest
 class RatesDaoTest {
@@ -37,12 +40,7 @@ class RatesDaoTest {
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private val database: AppDBTest by lazy {
-        Room.inMemoryDatabaseBuilder(
-            ApplicationProvider.getApplicationContext(),
-            AppDBTest::class.java
-        ).allowMainThreadQueries().build()
-    }
+    private lateinit var database: AppDB
     private lateinit var dao: RateDao
     private val rates: Rates by lazy { dummyRatesAndroidTest() }
     // scope and dispatchers
@@ -51,30 +49,34 @@ class RatesDaoTest {
     private val networkContext: CoroutineContext = testDispatcher.unconfined
 
     @Before
-    fun setup() {
+    fun setupDB() {
         hiltRule.inject()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        database = Room.inMemoryDatabaseBuilder(
+            context, AppDB::class.java).build()
         dao = database.rateDao
     }
 
-    @After
-    fun teardown() {
-        database.close()
-    }
-
-    @Suppress("UNCHECKED_CAST")
     @Test
-    fun insertExchangeRateItem_ReturnSuccess_If_matches_DB_item() = testScope.runTest {
-        val exchangeItem = CurrencyResponseDto(base = AppConstants.DEFAULT_CURRENCY, rates = rates.asMap() as HashMap<String, String>, timestamp = 1655226000.0)
-        dao.insertRateInfos(exchangeItem.toCurrencyInfoEntity())
-        val items = dao.getRatesOffline()?.rates
+    fun insertExchangeRateItem_ReturnSuccess_If_matches_DB_item() = runTest {
+        val exchangeItem = CurrencyResponseDto(base = AppConstants.DEFAULT_CURRENCY, rates = hashMapOf("USD" to "1", "BDT" to "183.83"), timestamp = 1655226000.0)
+        println("AppDB Instance: $database and isOpen: ${database.isOpen}")
+        dao.insertRateInfo(exchangeItem.toCurrencyInfoEntity())
+        val items = dao.fetchRatesFromDB()?.toRateInfo()?.rates
         assertThat(items).isEqualTo(exchangeItem.toCurrencyInfoEntity().rates)
     }
 
     @Test(expected=NullPointerException::class)
     fun insertExchangeRateItem_ReturnFailed_If_insertNullRates_to_DB() = testScope.runTest {
         val exchangeItem = CurrencyResponseDto(base = AppConstants.DEFAULT_CURRENCY, rates = hashMapOf(), timestamp = 1655226000.0)
-        dao.insertRateInfos(exchangeItem.toCurrencyInfoEntity())
-        val items = dao.getRatesOffline()?.rates
+        dao.insertRateInfo(exchangeItem.toCurrencyInfoEntity())
+        val items = dao.fetchRatesFromDB()?.toRateInfo()
         fail("Null pointer exception and the rate is NULL. result = $items")
+    }
+
+    @After
+    @Throws(IOException::class)
+    fun closeDB() {
+        database.close()
     }
 }

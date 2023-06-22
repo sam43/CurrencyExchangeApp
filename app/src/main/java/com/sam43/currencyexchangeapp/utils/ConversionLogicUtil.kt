@@ -177,38 +177,8 @@ fun getRateForCurrency(base: String, rates: Rates): String = when (base) {
     else -> "0.0"
 }
 
-fun unitConvertedRate(rates: Rates, from: String, to: String): Double = (1.0/(getRateForCurrency(from, rates)).toDouble()) * getRateForCurrency(to, rates).toDouble()
-
-fun getRatesAsList(rates: Rates, amount: Double = 1.0, from: String): MutableList<CurrencyRateItem> {
-    if (from.isEmpty()) return mutableListOf()
-    return mutableListOf(
-        CurrencyRateItem(
-            currency = "CAD",
-            value = (amount * unitConvertedRate(rates, from, "CAD")).to3decimalPoint()
-        ),
-        CurrencyRateItem(currency = "BDT", value = (amount * unitConvertedRate(rates, from, "BDT")).to3decimalPoint()),
-        CurrencyRateItem(currency = "EUR", value = (amount * unitConvertedRate(rates, from, "EUR")).to3decimalPoint()),
-        CurrencyRateItem(currency = "KWD", value = (amount * unitConvertedRate(rates, from, "KWD")).to3decimalPoint()),
-        CurrencyRateItem(currency = "JPY", value = (amount * unitConvertedRate(rates, from, "JPY")).to3decimalPoint()),
-        CurrencyRateItem(currency = "CNH", value = (amount * unitConvertedRate(rates, from, "CNH")).to3decimalPoint()),
-        CurrencyRateItem(currency = "USD", value = (amount * unitConvertedRate(rates, from, "USD")).to3decimalPoint()),
-        CurrencyRateItem(currency = "BTC", value = (amount * unitConvertedRate(rates, from, "BTC")).to3decimalPoint()),
-        CurrencyRateItem(currency = "GBP", value = (amount * unitConvertedRate(rates, from, "GBP")).to3decimalPoint()),
-        CurrencyRateItem(currency = "SGD", value = (amount * unitConvertedRate(rates, from, "SGD")).to3decimalPoint()),
-        CurrencyRateItem(currency = "INR", value = (amount * unitConvertedRate(rates, from, "INR")).to3decimalPoint()),
-        CurrencyRateItem(currency = "AUD", value = (amount * unitConvertedRate(rates, from, "AUD")).to3decimalPoint()),
-        CurrencyRateItem(currency = "NZD", value = (amount * unitConvertedRate(rates, from, "NZD")).to3decimalPoint()),
-        CurrencyRateItem(currency = "CZK", value = (amount * unitConvertedRate(rates, from, "CZK")).to3decimalPoint()),
-        CurrencyRateItem(currency = "RON", value = (amount * unitConvertedRate(rates, from, "RON")).to3decimalPoint()),
-        CurrencyRateItem(currency = "PHP", value = (amount * unitConvertedRate(rates, from, "PHP")).to3decimalPoint()),
-        CurrencyRateItem(currency = "HKD", value = (amount * unitConvertedRate(rates, from, "HKD")).to3decimalPoint()),
-        CurrencyRateItem(currency = "ISK", value = (amount * unitConvertedRate(rates, from, "ISK")).to3decimalPoint()),
-        CurrencyRateItem(currency = "DKK", value = (amount * unitConvertedRate(rates, from, "DKK")).to3decimalPoint()),
-        CurrencyRateItem(currency = "SEK", value = (amount * unitConvertedRate(rates, from, "SEK")).to3decimalPoint()),
-        CurrencyRateItem(currency = "XPF", value = (amount * unitConvertedRate(rates, from, "XPF")).to3decimalPoint()),
-        CurrencyRateItem(currency = "XPT", value = (amount * unitConvertedRate(rates, from, "XPT")).to3decimalPoint())
-    )
-}
+fun unitConvertedRate(rates: Rates, from: String, to: String): Double =
+    if (from == to) 1.0 else (1.0/(getRateForCurrency(from, rates)).toDouble()) * getRateForCurrency(to, rates).toDouble()
 
 fun fetchRatesAsList(rates: Map<String, Any>, rateObj: Rates, amount: Double = 0.0, from: String)
     : MutableList<CurrencyRateItem> {
@@ -217,12 +187,16 @@ fun fetchRatesAsList(rates: Map<String, Any>, rateObj: Rates, amount: Double = 0
     rates.entries.forEach { rate -> ratesList.add(
         CurrencyRateItem(
             currency = rate.key,
-            value = (amount * unitConvertedRate(rateObj, from, rate.key)).toString()
+            value = (amount * unitConvertedRate(rateObj, from, rate.key)).roundToString()
         )
     )
     }
     return ratesList
 }
+fun Double.roundToString() = when {
+    toInt().toDouble() == this -> toInt()
+    else -> this
+}.toString()
 
 fun <K, V> Map<K, V>.toRateInfoObject(): Rates {
     val rates = Rates()

@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
     private lateinit var binding: ActivityMainBinding
     private lateinit var mAdapter: RecyclerViewAdapter
-    private var selectedItem: String = DEFAULT_CURRENCY
+    private var selectedItem = DEFAULT_CURRENCY
 
     private val viewModel: MainViewModel by viewModels()
     private val connectivityViewModel: ConnectivityCheckerViewModel by viewModels()
@@ -60,11 +60,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-        textWatcherImpl()
         binding.rvGridView.layoutManager = GridLayoutManager(this,3)
+        textWatcherImpl()
         binding.spFromCurrency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, v: View?, position: Int, id: Long) {
                 selectedItem = parent?.getItemAtPosition(position) as String
+                defaultView("Initial BASE amount set to $selectedItem", getColor(R.color.green_700))
                 val amountValue = binding.etFrom.text.toString().ifEmpty { NO_VALUE }
                 viewModel.convert(amountStr = amountValue, from = selectedItem, to = null)
             }
@@ -151,7 +152,8 @@ class MainActivity : AppCompatActivity() {
         mAdapter = RecyclerViewAdapter(list as ArrayList<CurrencyRateItem>)
         binding.rvGridView.adapter = mAdapter
         mAdapter.updateView()
-        defaultView("Initial BASE amount set to $selectedItem", getColor(R.color.green_700))
+        binding.tvResult.isVisible = true
+        defaultView("Converted rates are showing for $selectedItem ${binding.etFrom.text}", getColor(R.color.teal_200))
     }
 
     private fun whenFailed(event: MainViewModel.CurrencyEvent.Failure) {

@@ -131,13 +131,13 @@ class ConversionLogicUtilTest {
 
     @Test
     fun `creation of currency list by default amount, return success if to is null then list is not null or empty`() =
-        assertTrue(getRatesAsList(rates = rates, from = "USD").isNotEmpty())
+        assertTrue(fetchRatesAsList(rates = rates.asMap(), rateObj = rates, from = "USD").isNotEmpty())
 
     @Test
     fun `creation of currency list by provided amount, return success if list is not empty`() =
-        assertTrue(getRatesAsList(rates = rates, amount = 25.9056, from = "USD").isNotEmpty())
+        assertTrue(fetchRatesAsList(rates = rates.asMap(), rateObj = rates, amount = 25.9056, from = "USD").isNotEmpty())
 
     @Test
     fun `creation of currency list by provided amount but empty 'from' value provided, return success if list is empty`() =
-        assertTrue(getRatesAsList(rates = rates, amount = 25.9056, "").isEmpty())
+        assertTrue(fetchRatesAsList(rates = rates.asMap(), rateObj = rates, amount = 25.9056, "").isEmpty())
 }
