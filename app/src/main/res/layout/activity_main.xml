@@ -57,7 +57,6 @@
         android:layout_height="wrap_content"
         android:text="@string/btn_convert"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/guideline1"
         app:layout_constraintEnd_toEndOf="@+id/spFromCurrency"
         app:layout_constraintStart_toEndOf="@+id/tilFrom"
         app:layout_constraintTop_toBottomOf="@+id/spFromCurrency" />
@@ -67,14 +66,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.14" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.3" />
+        app:layout_constraintGuide_percent="0.12" />
 
     <Spinner
         android:id="@+id/spFromCurrency"
@@ -94,7 +86,6 @@
         android:padding="4dp"
         android:visibility="gone"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toTopOf="@+id/guideline1"
         app:layout_constraintEnd_toEndOf="@+id/tilFrom"
         app:layout_constraintStart_toStartOf="@+id/tilFrom"
         app:layout_constraintTop_toBottomOf="@+id/tilFrom"
@@ -117,21 +108,22 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_gravity="center"
+        android:paddingBottom="8dp"
         android:gravity="center"
-        android:horizontalSpacing="5dp"
+        android:horizontalSpacing="2dp"
         android:numColumns="3"
-        android:padding="5dp"
-        android:verticalSpacing="5dp"
-        android:layout_marginBottom="16dp"
+        android:padding="4dp"
+        android:layout_marginTop="8dp"
         android:scrollIndicators="none"
-        tools:itemCount="20"
+        android:verticalSpacing="2dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="3"
-        tools:listitem="@layout/item_currency_info"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline1"
+        app:layout_constraintTop_toBottomOf="@+id/tvResult"
+        app:spanCount="3"
+        tools:itemCount="20"
+        tools:listitem="@layout/item_currency_info"
         tools:targetApi="m" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

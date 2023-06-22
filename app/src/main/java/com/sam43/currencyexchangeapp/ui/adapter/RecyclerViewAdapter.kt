@@ -1,12 +1,12 @@
 package com.sam43.currencyexchangeapp.ui.adapter
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.databinding.ItemCurrencyInfoBinding
+import com.sam43.currencyexchangeapp.utils.to3decimalPoint
 
 class RecyclerViewAdapter(private val rates: ArrayList<CurrencyRateItem>) : RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

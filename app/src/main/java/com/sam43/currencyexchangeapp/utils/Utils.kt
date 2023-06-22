@@ -11,6 +11,11 @@ fun Double.to3decimalPoint(): String = String.format("%.3f", this).trimTrailingZ
 
 fun String.to3decimalPoint(): String = String.format("%.3f", this.toDouble()).trimTrailingZero()
 
+fun Double.roundToString() = when {
+    toInt().toDouble() == this -> toInt()
+    else -> this
+}.toString()
+
 fun String?.trimTrailingZero(): String = if (!this.isNullOrEmpty()) {
     if (this.indexOf(".") < 0) {
         this
