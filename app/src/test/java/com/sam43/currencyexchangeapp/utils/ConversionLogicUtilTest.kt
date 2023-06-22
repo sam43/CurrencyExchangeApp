@@ -96,8 +96,6 @@ class ConversionLogicUtilTest {
         val from = "USD"
         val to = ""
         val convertedRate = unitConvertedRate(rates, from, to).to3decimalPoint()
-        println("Converted rate from $from to $to is: $convertedRate")
-        println("Converted rate from ${getRateForCurrency(to, rates).to3decimalPoint()}")
         assertTrue(convertedRate == getRateForCurrency(to, rates).to3decimalPoint())
     }
 

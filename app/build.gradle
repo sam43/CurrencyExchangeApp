@@ -25,6 +25,11 @@ android {
 
         // Create own/custom application suite for HiltProject
         testInstrumentationRunner "com.sam43.currencyexchangeapp.HiltTestRunner"
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
     
     buildFeatures {
