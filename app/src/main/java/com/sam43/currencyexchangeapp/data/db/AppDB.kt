@@ -10,10 +10,10 @@ import com.sam43.currencyexchangeapp.data.local.entity.CurrencyResponseEntity
 
 @Database(
     entities = [CurrencyResponseEntity::class],
-    version = 2, exportSchema = true,
-    autoMigrations = [
-        AutoMigration(from = 1, to = 2)
-    ]
+    version = 2, exportSchema = false,
+//    autoMigrations = [
+//        AutoMigration(from = 1, to = 2)
+//    ]
 )
 
 @TypeConverters(Converters::class)
