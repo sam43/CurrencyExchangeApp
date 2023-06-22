@@ -54,12 +54,6 @@ class MainViewModelTest : ViewModel() {
     }
 
     @Test
-    fun `test math`() {
-        val sum = 3 + 5
-        assert(sum == 2+6)
-    }
-
-    @Test
     fun `fetching rates from server`() = runTest {
         coEvery {
             conversionUseCase.getRates(any())
@@ -70,7 +64,8 @@ class MainViewModelTest : ViewModel() {
             mainViewModel.conversion
                 .onCompletion {t ->
                     assertEquals(MainViewModel.CurrencyEvent.Loading, mainViewModel.conversion.first())
-                    assertEquals(MainViewModel.CurrencyEvent.SuccessResponse(currencyResponse), mainViewModel.conversion.last())
+                    assertEquals(MainViewModel.CurrencyEvent.SuccessResponse(currencyResponse),
+                        mainViewModel.conversion.last())
                     assertNotEquals(t, mainViewModel.conversion)
                 }
         }
@@ -86,7 +81,8 @@ class MainViewModelTest : ViewModel() {
         launch { mainViewModel.conversionRates
             .onCompletion {t ->
                 assertEquals(MainViewModel.CurrencyEvent.Loading, mainViewModel.conversionRates.first())
-                assertEquals(MainViewModel.CurrencyEvent.SuccessListResponse(expectedList), mainViewModel.conversionRates.last())
+                assertEquals(MainViewModel.CurrencyEvent.SuccessListResponse(expectedList),
+                    mainViewModel.conversionRates.last())
                 assertNotEquals(t, mainViewModel.conversionRates)
             }
         }

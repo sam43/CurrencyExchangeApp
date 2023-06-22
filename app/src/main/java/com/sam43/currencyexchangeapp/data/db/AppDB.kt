@@ -1,12 +1,11 @@
-package com.sam43.currencyexchangeapp.data.local
+package com.sam43.currencyexchangeapp.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.sam43.currencyexchangeapp.data.local.dao.RateDao
 import com.sam43.currencyexchangeapp.data.local.entity.Converters
 import com.sam43.currencyexchangeapp.data.local.entity.CurrencyResponseEntity
-import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
-import com.sam43.currencyexchangeapp.data.remote.RatesDto
 
 @Database(
     entities = [CurrencyResponseEntity::class],

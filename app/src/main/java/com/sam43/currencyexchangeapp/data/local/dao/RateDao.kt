@@ -1,4 +1,4 @@
-package com.sam43.currencyexchangeapp.data.local
+package com.sam43.currencyexchangeapp.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert

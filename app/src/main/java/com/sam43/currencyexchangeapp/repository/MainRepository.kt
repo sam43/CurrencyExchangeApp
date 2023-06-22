@@ -1,7 +1,7 @@
 package com.sam43.currencyexchangeapp.repository
 
 import android.util.Log
-import com.sam43.currencyexchangeapp.data.local.RateDao
+import com.sam43.currencyexchangeapp.data.local.dao.RateDao
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.CurrencyResponse
 import com.sam43.currencyexchangeapp.network.CurrencyApi
