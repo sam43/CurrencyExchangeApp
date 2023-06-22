@@ -5,7 +5,7 @@
       <entry key="ConversionLogicUtilTest">
         <State />
       </entry>
-      <entry key="RatesDaoTest">
+      <entry key="MainActivityTest">
         <State />
       </entry>
       <entry key="app">
@@ -24,10 +24,10 @@
           <timeTargetWasSelectedWithDropDown value="2023-06-18T13:12:59.048284Z" />
         </State>
       </entry>
-      <entry key="check_if_an_item_in_recyclerview_same_currency_should_show_same_as_input_value()">
+      <entry key="check_if_an_bdt_value_exists_in_recyclerview()">
         <State />
       </entry>
-      <entry key="insertExchangeRateItem_ReturnFailed_If_insertNullRates_to_DB()">
+      <entry key="check_if_an_item_value_exists_in_recyclerview()">
         <State />
       </entry>
       <entry key="insertExchangeRateItem_ReturnSuccess_If_matches_DB_item()">

@@ -14,13 +14,12 @@ import com.sam43.currencyexchangeapp.dummyRatesAndroidTest
 import com.sam43.currencyexchangeapp.ui.adapter.RecyclerViewAdapter
 import com.sam43.currencyexchangeapp.utils.AppConstants
 import com.sam43.currencyexchangeapp.utils.asMap
-import com.sam43.currencyexchangeapp.utils.unitConvertedRate
 import com.sam43.currencyexchangeapp.utils.to3decimalPoint
+import com.sam43.currencyexchangeapp.utils.unitConvertedRate
 import com.sam43.currencyexchangeapp.withRecyclerView
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.hamcrest.CoreMatchers.*
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -96,6 +95,7 @@ class MainActivityTest {
         val currency = AppConstants.DEFAULT_CURRENCY
         onView(withId(R.id.spFromCurrency)).perform(click())
         onData(allOf(`is`(instanceOf(String::class.java)), `is`(currency))).perform(click())
+        println("check_if_an_item_value_exists_in_recyclerview: ${fetchDataByKey("AFN")}")
         onView(withRecyclerView(R.id.rvGridView)
             .atPositionOnView(1, R.id.tvRate))
             .check(
@@ -108,6 +108,7 @@ class MainActivityTest {
         val currency = AppConstants.DEFAULT_CURRENCY
         onView(withId(R.id.spFromCurrency)).perform(click())
         onData(allOf(`is`(instanceOf(String::class.java)), `is`(currency))).perform(click())
+        println("check_if_an_bdt_value_exists_in_recyclerview = ${fetchDataByKey("BDT")}")
         onView(withRecyclerView(R.id.rvGridView)
             .atPositionOnView(12, R.id.tvRate))
             .check(
@@ -115,7 +116,7 @@ class MainActivityTest {
             )
     }
 
-    private fun fetchDataByKey(key: String): String = dummyRatesAndroidTest().asMap()[key].toString()
+    private fun fetchDataByKey(key: String): String = dummyRatesAndroidTest().asMap()[key].toString().to3decimalPoint()
 
     @Test
     fun enter_conversion_amount_and_simulate_conversion() {
@@ -150,5 +151,5 @@ class MainActivityTest {
     }
 
     private fun convertedValues(from: String, to: String) =
-        (toBeTypedText.toDouble() * unitConvertedRate(dummyRatesAndroidTest(), from, to)).toString()
+        (toBeTypedText.toDouble() * unitConvertedRate(dummyRatesAndroidTest(), from, to)).toString().to3decimalPoint()
 }

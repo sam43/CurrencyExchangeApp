@@ -187,16 +187,12 @@ fun fetchRatesAsList(rates: Map<String, Any>, rateObj: Rates, amount: Double = 0
     rates.entries.forEach { rate -> ratesList.add(
         CurrencyRateItem(
             currency = rate.key,
-            value = (amount * unitConvertedRate(rateObj, from, rate.key)).roundToString()
+            value = (amount * unitConvertedRate(rateObj, from, rate.key)).toString().to3decimalPoint()
         )
     )
     }
     return ratesList
 }
-fun Double.roundToString() = when {
-    toInt().toDouble() == this -> toInt()
-    else -> this
-}.toString()
 
 fun <K, V> Map<K, V>.toRateInfoObject(): Rates {
     val rates = Rates()
