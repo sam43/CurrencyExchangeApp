@@ -9,7 +9,7 @@ import com.sam43.currencyexchangeapp.data.local.entity.CurrencyResponseEntity
 
 @Database(
     entities = [CurrencyResponseEntity::class],
-    version = 1, exportSchema = false
+    version = 1, exportSchema = true
 )
 
 @TypeConverters(Converters::class)
