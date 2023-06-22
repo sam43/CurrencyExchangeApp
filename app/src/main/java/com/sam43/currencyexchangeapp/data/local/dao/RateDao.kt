@@ -9,9 +9,9 @@ import com.sam43.currencyexchangeapp.data.local.entity.CurrencyResponseEntity
 @Dao
 interface RateDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertRateInfos(infos: CurrencyResponseEntity)
+    suspend fun insertRateInfo(info: CurrencyResponseEntity)
 
     @Query("SELECT * FROM rate")
-    suspend fun getRatesOffline(): CurrencyResponseEntity?
+    fun fetchRatesFromDB(): CurrencyResponseEntity?
 
 }

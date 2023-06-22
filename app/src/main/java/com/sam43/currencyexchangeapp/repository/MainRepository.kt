@@ -22,7 +22,7 @@ class MainRepository @Inject constructor(
     override fun getRatesOffline(base: String): Flow<Resource<CurrencyResponse?>> = flow {
         emit(Resource.Loading())
         // Satisfying single source of truth
-        val rateInfo = dao.getRatesOffline()?.toRateInfo()
+        val rateInfo = dao.fetchRatesFromDB()?.toRateInfo()
         rateInfo?.let {
             emit(Resource.Success(data = it))
         }
@@ -30,7 +30,7 @@ class MainRepository @Inject constructor(
             val remoteRateInfo = api.getRates()
             Log.d("IMainRepository", "getRatesOffline: ${remoteRateInfo.body()?.rates}")
             remoteRateInfo.body()?.toCurrencyInfoEntity()?.let {
-                dao.insertRateInfos(it)
+                dao.insertRateInfo(it)
             }
         } catch (e: HttpException) {
             emit(
@@ -48,7 +48,7 @@ class MainRepository @Inject constructor(
             )
         }
 
-        val rateInfoFinal = dao.getRatesOffline()?.toRateInfo()
+        val rateInfoFinal = dao.fetchRatesFromDB()?.toRateInfo()
         emit(Resource.Success(data = rateInfoFinal))
     }
 
@@ -60,7 +60,7 @@ class MainRepository @Inject constructor(
         flow {
             emit(Resource.Loading())
             try {
-                val rates = dao.getRatesOffline()?.rates
+                val rates = dao.fetchRatesFromDB()?.rates
                 val rateList =
                     rates?.let { fetchRatesAsList(it.asMap(), it, amountStr.toDouble(), from) } ?: mutableListOf()
                 emit(Resource.Success(data = rateList))
