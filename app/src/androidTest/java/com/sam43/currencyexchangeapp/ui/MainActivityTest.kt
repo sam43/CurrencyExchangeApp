@@ -12,7 +12,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sam43.currencyexchangeapp.R
 import com.sam43.currencyexchangeapp.dummyRatesAndroidTest
 import com.sam43.currencyexchangeapp.ui.adapter.RecyclerViewAdapter
-import com.sam43.currencyexchangeapp.utils.getRateForCurrency
+import com.sam43.currencyexchangeapp.utils.AppConstants
+import com.sam43.currencyexchangeapp.utils.asMap
+import com.sam43.currencyexchangeapp.utils.unitConvertedRate
 import com.sam43.currencyexchangeapp.utils.to3decimalPoint
 import com.sam43.currencyexchangeapp.withRecyclerView
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -46,6 +48,7 @@ class MainActivityTest {
     fun enter_conversion_amount_check_if_matches() {
         // Type text and then press the button.
         onView(withId(R.id.etFrom))
+            .perform(clearText())
             .perform(typeText(toBeTypedText), closeSoftKeyboard())
         // Check that the text was changed.
         onView(withId(R.id.etFrom)).check(matches(withText(toBeTypedText)))
@@ -62,33 +65,90 @@ class MainActivityTest {
     }
 
     @Test
-    fun check_if_an_item_exists_in_recyclerview() {
+    fun check_if_an_item_name_exists_in_recyclerview() {
         onView(withId(R.id.spFromCurrency)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`("USD"))).perform(click())
+        onData(allOf(`is`(instanceOf(String::class.java)), `is`(AppConstants.DEFAULT_CURRENCY))).perform(click())
         onView(withRecyclerView(R.id.rvGridView)
-            .atPositionOnView(2, R.id.tvRate))
+            .atPositionOnView(0, R.id.tvCountry))
             .check(
-                matches(withText("94.317"))
+                matches(withText("AED")) // 1st item was AED
             )
     }
 
     @Test
-    fun enter_conversion_amount_and_simulate_conversion() {
-        // Type text and then press the button.
-        val from = "USD"
-        val to = "BDT"
+    fun check_if_an_item_in_recyclerview_same_currency_should_show_same_as_input_value() {
+        val defaultCurrency = "AED"
         onView(withId(R.id.etFrom))
+            .perform(clearText())
             .perform(typeText(toBeTypedText), closeSoftKeyboard())
         onView(withId(R.id.spFromCurrency)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(to))).perform(click())
-        // Check that the conversion was changed or succeed.
+        onData(allOf(`is`(instanceOf(String::class.java)), `is`(defaultCurrency))).perform(click())
+        println("default value: ${convertedValues(defaultCurrency, defaultCurrency)} and unit: ${unitConvertedRate(dummyRatesAndroidTest(), defaultCurrency, defaultCurrency)}")
         onView(withRecyclerView(R.id.rvGridView)
-            .atPositionOnView(2, R.id.tvRate))
-            .check(matches(withText((toBeTypedText.toDouble() * getRateForCurrency(from, dummyRatesAndroidTest())!!).to3decimalPoint())))
+            .atPositionOnView(0, R.id.tvRate))
+            .check(
+                matches(withText(convertedValues(defaultCurrency, defaultCurrency))) // 1st item was AED
+            )
     }
 
-    @After
-    fun tearDown() {
-        //clean up code
+    @Test
+    fun check_if_an_item_value_exists_in_recyclerview() {
+        val currency = AppConstants.DEFAULT_CURRENCY
+        onView(withId(R.id.spFromCurrency)).perform(click())
+        onData(allOf(`is`(instanceOf(String::class.java)), `is`(currency))).perform(click())
+        onView(withRecyclerView(R.id.rvGridView)
+            .atPositionOnView(1, R.id.tvRate))
+            .check(
+                matches(withText(fetchDataByKey("AFN")))
+            )
     }
+
+    @Test
+    fun check_if_an_bdt_value_exists_in_recyclerview() {
+        val currency = AppConstants.DEFAULT_CURRENCY
+        onView(withId(R.id.spFromCurrency)).perform(click())
+        onData(allOf(`is`(instanceOf(String::class.java)), `is`(currency))).perform(click())
+        onView(withRecyclerView(R.id.rvGridView)
+            .atPositionOnView(12, R.id.tvRate))
+            .check(
+                matches(withText(fetchDataByKey("BDT")))
+            )
+    }
+
+    private fun fetchDataByKey(key: String): String = dummyRatesAndroidTest().asMap()[key].toString()
+
+    @Test
+    fun enter_conversion_amount_and_simulate_conversion() {
+        // Type text and then press the button.
+        val from = AppConstants.DEFAULT_CURRENCY
+        val to = "AED"
+        onView(withId(R.id.etFrom))
+            .perform(clearText())
+            .perform(typeText(toBeTypedText), closeSoftKeyboard())
+        onView(withId(R.id.spFromCurrency)).perform(click())
+        onData(allOf(`is`(instanceOf(String::class.java)), `is`(from))).perform(click())
+        // Check that the conversion was changed or succeed.
+        onView(withRecyclerView(R.id.rvGridView)
+            .atPositionOnView(0, R.id.tvRate))
+            .check(matches(withText(convertedValues(from, to))))
+    }
+    @Test
+    fun enter_conversion_amount_and_simulate_conversion_with_GBP() {
+        // Type text and then press the button.
+        val from = "AED"
+        val to = "BDT"
+        onView(withId(R.id.etFrom))
+            .perform(clearText())
+            .perform(typeText(toBeTypedText), closeSoftKeyboard())
+        onView(withId(R.id.spFromCurrency)).perform(click())
+        onData(allOf(`is`(instanceOf(String::class.java)), `is`(from))).perform(click())
+        // Check that the conversion was changed or succeed.
+        println("converted value: ${convertedValues(from, to)}")
+        onView(withRecyclerView(R.id.rvGridView)
+            .atPositionOnView(12, R.id.tvRate)) // because BDT is in 12th place
+            .check(matches(withText(convertedValues(from, to))))
+    }
+
+    private fun convertedValues(from: String, to: String) =
+        (toBeTypedText.toDouble() * unitConvertedRate(dummyRatesAndroidTest(), from, to)).toString()
 }

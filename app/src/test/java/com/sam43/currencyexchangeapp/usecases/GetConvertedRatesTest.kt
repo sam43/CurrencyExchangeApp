@@ -27,7 +27,7 @@ import org.junit.runners.JUnit4
 class GetConvertedRatesTest {
     @MockK
     lateinit var repository: IMainRepository
-    lateinit var usecase: GetConvertedRates
+    private lateinit var usecase: GetConvertedRates
     private var amountForTest = "10.0"
     private var from = AppConstants.DEFAULT_CURRENCY
     private var to = "BDT"
@@ -62,11 +62,5 @@ class GetConvertedRatesTest {
             usecase.invoke(amountForTest, from, to)
             repository.getConvertedRates(amountForTest, from, to)
         }
-    }
-
-    @ExperimentalCoroutinesApi
-    @Test
-    fun name() {
-        TODO("Not yet implemented")
     }
 }

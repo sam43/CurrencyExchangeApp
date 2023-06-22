@@ -1,6 +1,7 @@
 package com.sam43.currencyexchangeapp.ui.adapter
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -24,8 +25,8 @@ class RecyclerViewAdapter(private val rates: ArrayList<CurrencyRateItem>) : Recy
 
     class ViewHolder(private val itemCurrencyInfoBinding: ItemCurrencyInfoBinding) : RecyclerView.ViewHolder(itemCurrencyInfoBinding.root) {
         fun bind(item: CurrencyRateItem) {
-            itemCurrencyInfoBinding.tvCountry.text = item.currency.toString()
-            itemCurrencyInfoBinding.tvRate.text = item.value.toString()
+            itemCurrencyInfoBinding.tvCountry.text = item.currency
+            itemCurrencyInfoBinding.tvRate.text = item.value
         }
     }
 }

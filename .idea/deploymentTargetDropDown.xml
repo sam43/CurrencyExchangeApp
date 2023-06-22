@@ -2,19 +2,7 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="ConversionLogicUtilTest.convert currencies using amount, return failed if amount is -1">
-        <State />
-      </entry>
-      <entry key="ConversionLogicUtilTest.convert currencies using amount, return failed if amount is not provided">
-        <State />
-      </entry>
-      <entry key="ConversionLogicUtilTest.creation of currency list by default amount, return success if to is null then list is not null or empty">
-        <State />
-      </entry>
-      <entry key="MainViewModelTest.namec">
-        <State />
-      </entry>
-      <entry key="MainViewModelTest.test math">
+      <entry key="MainActivityTest">
         <State />
       </entry>
       <entry key="app">
@@ -32,6 +20,18 @@
           </targetSelectedWithDropDown>
           <timeTargetWasSelectedWithDropDown value="2023-06-18T13:12:59.048284Z" />
         </State>
+      </entry>
+      <entry key="check_if_an_item_in_recyclerview_same_currency_should_show_same_as_input_value()">
+        <State />
+      </entry>
+      <entry key="check_if_an_item_value_exists_in_recyclerview()">
+        <State />
+      </entry>
+      <entry key="enter_conversion_amount_and_simulate_conversion()">
+        <State />
+      </entry>
+      <entry key="enter_conversion_amount_and_simulate_conversion_with_GBP()">
+        <State />
       </entry>
     </value>
   </component>

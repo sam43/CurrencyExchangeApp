@@ -63,7 +63,7 @@ class ConversionLogicUtilTest {
     fun `get converted rate from give base to expecting currency, return success if matches`() {
         val from = "USD"
         val to = "BDT"
-        val convertedRate = getConvertedRate(rates, from, to).to3decimalPoint()
+        val convertedRate = unitConvertedRate(rates, from, to).to3decimalPoint()
         assertTrue(convertedRate == getRateForCurrency(to, rates).to3decimalPoint())
     }
 
@@ -71,7 +71,7 @@ class ConversionLogicUtilTest {
     fun `get converted rate from give base to expecting currency, return failed if from value is null`() {
         val from = null
         val to = "BDT"
-        val convertedRate = getConvertedRate(rates, from.toString(), to).to3decimalPoint()
+        val convertedRate = unitConvertedRate(rates, from.toString(), to).to3decimalPoint()
         assertFalse(convertedRate == getRateForCurrency(to, rates).to3decimalPoint())
     }
 
@@ -79,7 +79,7 @@ class ConversionLogicUtilTest {
     fun `get converted rate from give base to expecting currency, return failed if 'from' value is empty`() {
         val from = ""
         val to = "BDT"
-        val convertedRate = getConvertedRate(rates, from, to).to3decimalPoint()
+        val convertedRate = unitConvertedRate(rates, from, to).to3decimalPoint()
         assertFalse(convertedRate == getRateForCurrency(to, rates).to3decimalPoint())
     }
 
@@ -87,7 +87,7 @@ class ConversionLogicUtilTest {
     fun `get converted rate from give base to expecting currency, return 0 (default value) if 'to' value is null`() {
         val from = "USD"
         val to = null
-        val convertedRate = getConvertedRate(rates, from, to.toString()).to3decimalPoint()
+        val convertedRate = unitConvertedRate(rates, from, to.toString()).to3decimalPoint()
         assertTrue(convertedRate == getRateForCurrency(to.toString(), rates).to3decimalPoint())
     }
 
@@ -95,7 +95,7 @@ class ConversionLogicUtilTest {
     fun `get converted rate from give base to expecting currency, return  0 (default value) if to value is empty`() {
         val from = "USD"
         val to = ""
-        val convertedRate = getConvertedRate(rates, from, to).to3decimalPoint()
+        val convertedRate = unitConvertedRate(rates, from, to).to3decimalPoint()
         println("Converted rate from $from to $to is: $convertedRate")
         println("Converted rate from ${getRateForCurrency(to, rates).to3decimalPoint()}")
         assertTrue(convertedRate == getRateForCurrency(to, rates).to3decimalPoint())
@@ -125,8 +125,8 @@ class ConversionLogicUtilTest {
         val from = "USD"
         val to = "BDT"
         val convertedRate = getConvertedRateAsObject(rates = rates, from = from, to = to)
-        // as the amount is not provided, so that we use the default value "1.0" as per calculation
-        assertTrue(convertedRate == rates.BDT)
+        // as the amount is not provided, so that we use the default value "0.0" as per calculation
+        assertNotEquals(convertedRate, rates.BDT.toDouble().toString())
     }
 
     @Test

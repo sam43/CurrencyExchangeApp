@@ -2,46 +2,9 @@ package com.sam43.currencyexchangeapp.utils
 
 import com.sam43.currencyexchangeapp.data.models.CurrencyRateItem
 import com.sam43.currencyexchangeapp.data.models.Rates
-import org.jetbrains.annotations.TestOnly
-import java.security.InvalidParameterException
 import kotlin.reflect.full.memberProperties
-import kotlin.time.times
 
 fun getRateForCurrency(base: String, rates: Rates): String = when (base) {
-    "CAD" -> rates.CAD
-    "HKD" -> rates.HKD
-    "ISK" -> rates.ISK
-    "EUR" -> rates.EUR
-    "PHP" -> rates.PHP
-    "DKK" -> rates.DKK
-    "HUF" -> rates.HUF // PROBLEMATIC
-    "CZK" -> rates.CZK
-    "AUD" -> rates.AUD
-    "RON" -> rates.RON
-    "SEK" -> rates.SEK
-    "BDT" -> rates.BDT
-    "BBD" -> rates.BBD
-    "IDR" -> rates.IDR
-    "INR" -> rates.INR
-    "BRL" -> rates.BRL
-    "RUB" -> rates.RUB
-    "HRK" -> rates.HRK
-    "JPY" -> rates.JPY
-    "THB" -> rates.THB
-    "CHF" -> rates.CHF
-    "SGD" -> rates.SGD
-    "PLN" -> rates.PLN
-    "BGN" -> rates.BGN
-    "CNY" -> rates.CNY
-    "NOK" -> rates.NOK
-    "NZD" -> rates.NZD
-    "ZAR" -> rates.ZAR
-    "USD" -> rates.USD
-    "MXN" -> rates.MXN
-    "ILS" -> rates.ILS
-    "GBP" -> rates.GBP
-    "KRW" -> rates.KRW
-    "MYR" -> rates.MYR
     "AED" -> rates.AED
     "AFN" -> rates.AFN
     "ALL" -> rates.ALL
@@ -49,158 +12,201 @@ fun getRateForCurrency(base: String, rates: Rates): String = when (base) {
     "ANG" -> rates.ANG
     "AOA" -> rates.AOA
     "ARS" -> rates.ARS
+    "AUD" -> rates.AUD
     "AWG" -> rates.AWG
     "AZN" -> rates.AZN
     "BAM" -> rates.BAM
+    "BBD" -> rates.BBD
+    "BDT" -> rates.BDT
+    "BGN" -> rates.BGN
     "BHD" -> rates.BHD
     "BIF" -> rates.BIF
     "BMD" -> rates.BMD
     "BND" -> rates.BND
     "BOB" -> rates.BOB
+    "BRL" -> rates.BRL
     "BSD" -> rates.BSD
     "BTC" -> rates.BTC
     "BTN" -> rates.BTN
     "BWP" -> rates.BWP
+    "BYN" -> rates.BYN
     "BZD" -> rates.BZD
+    "CAD" -> rates.CAD
     "CDF" -> rates.CDF
+    "CHF" -> rates.CHF
     "CLF" -> rates.CLF
     "CLP" -> rates.CLP
     "CNH" -> rates.CNH
+    "CNY" -> rates.CNY
     "COP" -> rates.COP
     "CRC" -> rates.CRC
     "CUC" -> rates.CUC
     "CUP" -> rates.CUP
+    "CVE" -> rates.CVE
+    "CZK" -> rates.CZK
+    "DJF" -> rates.DJF
+    "DKK" -> rates.DKK
+    "DOP" -> rates.DOP
     "DZD" -> rates.DZD
+    "EGP" -> rates.EGP
     "ERN" -> rates.ERN
     "ETB" -> rates.ETB
+    "EUR" -> rates.EUR
     "FJD" -> rates.FJD
     "FKP" -> rates.FKP
+    "GBP" -> rates.GBP
     "GEL" -> rates.GEL
+    "GGP" -> rates.GGP
     "GHS" -> rates.GHS
+    "GIP" -> rates.GIP
     "GMD" -> rates.GMD
     "GNF" -> rates.GNF
+    "GTQ" -> rates.GTQ
     "GYD" -> rates.GYD
+    "HKD" -> rates.HKD
     "HNL" -> rates.HNL
+    "HRK" -> rates.HRK
     "HTG" -> rates.HTG
-    "IMP" -> rates.IMP
-    "IQD" -> rates.IQD
-    "JEP" -> rates.JEP
-    "JMD" -> rates.JMD
-    "JOD" -> rates.JOD
-    "KES" -> rates.KES
-    "KGS" -> rates.KGS
-    "KHR" -> rates.KHR
-    "KMF" -> rates.KMF
-    "KPW" -> rates.KPW
-    "KWD" -> rates.KWD
-    "KYD" -> rates.KYD
-    "KZT" -> rates.JMD
-    "LAK" -> rates.LAK
-    "LBP" -> rates.LBP
-    "LKR" -> rates.LKR
-    "LRD" -> rates.LRD
-    "LSL" -> rates.LSL
-    "LYD" -> rates.LYD
-    "MAD" -> rates.MAD
-    "MDL" -> rates.MDL
-    "MGA" -> rates.MGA
-    "MKD" -> rates.MKD
-    "MMK" -> rates.MMK
-    "MNT" -> rates.MNT
-    "MOP" -> rates.MOP
-    "MRU" -> rates.MRU
-    "MUR" -> rates.MUR
-    "MVR" -> rates.MVR
-    "MWK" -> rates.MWK
-    "MZN" -> rates.MZN
-    "NAD" -> rates.NAD
-    "NGN" -> rates.NGN
-    "NIO" -> rates.NIO
-    "NPR" -> rates.NPR
-    "OMR" -> rates.OMR
-    "PAB" -> rates.PAB
-    "PEN" -> rates.PEN
-    "PGK" -> rates.PGK
-    "PKR" -> rates.PKR
-    "PYG" -> rates.PYG
-    "QAR" -> rates.QAR
-    "RSD" -> rates.RSD
-    "RWF" -> rates.RWF
-    "SAR" -> rates.SAR
-    "SBD" -> rates.PAB
-    "SCR" -> rates.SCR
-    "SDG" -> rates.SDG
-    "SHP" -> rates.SHP
-    "SLL" -> rates.SLL
-    "SOS" -> rates.SOS
-    "SRD" -> rates.SRD
-    "SSP" -> rates.SSP
-    "STD" -> rates.STD
-    "STN" -> rates.STN
-    "SVC" -> rates.SVC
-    "SYP" -> rates.SYP
-    "SZL" -> rates.SZL
-    "TJS" -> rates.TJS
-    "TMT" -> rates.TMT
-    "TND" -> rates.TND
-    "TOP" -> rates.TOP
-    "TRY" -> rates.TRY
-    "TTD" -> rates.TTD
-    "TWD" -> rates.TWD
-    "TZS" -> rates.TZS
-    "UAH" -> rates.UAH
-    "UGX" -> rates.UGX
-    "UYU" -> rates.UYU
-    "UZS" -> rates.UZS
-    "VES" -> rates.VES
-    "VND" -> rates.VND
-    "VUV" -> rates.VUV
-    "WST" -> rates.WST
-    "XAF" -> rates.XAF
-    "XAG" -> rates.XAG
-    "XAU" -> rates.XAU
-    "XCD" -> rates.XCD
-    "XDR" -> rates.XDR
-    "XOF" -> rates.XOF
-    "XPD" -> rates.XPD
-    "XPF" -> rates.XPF
-    "XPT" -> rates.XPT
-    "YER" -> rates.YER
-    "ZMW" -> rates.ZMW
-    "ZWL" -> rates.ZWL
+    "HUF" -> rates.HUF// Code for HUF
+    "IDR" -> rates.IDR// Code for IDR
+    "ILS" -> rates.ILS// Code for ILS
+    "IMP" -> rates.IMP// Code for IMP
+    "INR" -> rates.INR// Code for INR
+    "IQD" -> rates.IQD// Code for IQD
+    "IRR" -> rates.IRR// Code for IRR
+    "ISK" -> rates.ISK// Code for ISK
+    "JEP" -> rates.JEP// Code for JEP
+    "JMD" -> rates.JMD// Code for JMD
+    "JOD" -> rates.JOD// Code for JOD
+    "JPY" -> rates.JPY// Code for JPY
+    "KES" -> rates.KES// Code for KES
+    "KGS" -> rates.KGS// Code for KGS
+    "KHR" -> rates.KHR// Code for KHR
+    "KMF" -> rates.KMF// Code for KMF
+    "KPW" -> rates.KPW// Code for KPW
+    "KRW" -> rates.KRW// Code for KRW
+    "KWD" -> rates.KWD// Code for KWD
+    "KYD" -> rates.KYD// Code for KYD
+    "KZT" -> rates.KZT// Code for KZT
+    "LAK" -> rates.LAK// Code for LAK
+    "LBP" -> rates.LBP// Code for LBP
+    "LKR" -> rates.LKR// Code for LKR
+    "LRD" -> rates.LRD// Code for LRD
+    "LSL" -> rates.LSL// Code for LSL
+    "LYD" -> rates.LYD// Code for LYD
+    "MAD" -> rates.MAD// Code for MAD
+    "MDL" -> rates.MDL// Code for MDL
+    "MGA" -> rates.MGA// Code for MGA
+    "MKD" -> rates.MKD // Code for MKD
+    "MMK" -> rates.MMK // Code for MMK
+    "MNT" -> rates.MNT // Code for MNT
+    "MOP" -> rates.MOP // Code for MOP
+    "MRU" -> rates.MRU // Code for MRU
+    "MUR" -> rates.MUR // Code for MUR
+    "MVR" -> rates.MVR // Code for MVR
+    "MWK" -> rates.MWK // Code for MWK
+    "MXN" -> rates.MXN // Code for MXN
+    "MYR" -> rates.MYR // Code for MYR
+    "MZN" -> rates.MZN // Code for MZN
+    "NAD" -> rates.NAD // Code for NAD
+    "NGN" -> rates.NGN // Code for NGN
+    "NIO" -> rates.NIO // Code for NIO
+    "NOK" -> rates.NOK // Code for NOK
+    "NPR" -> rates.NPR // Code for NPR
+    "NZD" -> rates.NZD // Code for NZD
+    "OMR" -> rates.OMR // Code for OMR
+    "PAB" -> rates.PAB // Code for PAB
+    "PEN" -> rates.PEN // Code for PEN
+    "PGK" -> rates.PGK // Code for PGK
+    "PHP" -> rates.PHP // Code for PHP
+    "PKR" -> rates.PKR // Code for PKR
+    "PLN" -> rates.PLN // Code for PLN
+    "PYG" -> rates.PYG // Code for PYG
+    "QAR" -> rates.QAR // Code for QAR
+    "RON" -> rates.RON // Code for RON
+    "RSD" -> rates.RSD // Code for RSD
+    "RUB" -> rates.RUB // Code for RUB
+    "RWF" -> rates.RWF // Code for RWF
+    "SAR" -> rates.SAR // Code for SAR
+    "SBD" -> rates.SBD // Code for SBD
+    "SCR" -> rates.SCR // Code for SCR
+    "SDG" -> rates.SDG // Code for SDG
+    "SEK" -> rates.SEK // Code for SEK
+    "SGD" -> rates.SGD // Code for SGD
+    "SHP" -> rates.SHP // Code for SHP
+    "SLL" -> rates.SLL // Code for SLL
+    "SOS" -> rates.SOS // Code for SOS
+    "SRD" -> rates.SRD // Code for SRD
+    "SSP" -> rates.SSP // Code for SSP
+    "STD" -> rates.STD // Code for STD
+    "STN" -> rates.STN // Code for STN
+    "SVC" -> rates.SVC // Code for SVC
+    "SYP" -> rates.SYP // Code for SYP
+    "SZL" -> rates.SZL // Code for SZL
+    "THB" -> rates.THB // Code for THB
+    "TJS" -> rates.TJS // Code for TJS
+    "TMT" -> rates.TMT // Code for TMT
+    "TND" -> rates.TND // Code for TND
+    "TOP" -> rates.TOP // Code for TOP
+    "TRY" -> rates.TRY // Code for TRY
+    "TTD" -> rates.TTD // Code for TTD
+    "TWD" -> rates.TWD // Code for TWD
+    "TZS" -> rates.TZS // Code for TZS
+    "UAH" -> rates.UAH // Code for UAH
+    "UGX" -> rates.UGX // Code for UGX
+    "USD" -> rates.USD // Code for USD
+    "UYU" -> rates.UYU // Code for UYU
+    "UZS" -> rates.UZS // Code for UZS
+    "VES" -> rates.VES // Code for VES
+    "VND" -> rates.VND // Code for VND
+    "VUV" -> rates.VUV // Code for VUV
+    "WST" -> rates.WST // Code for WST
+    "XAF" -> rates.XAF // Code for XAF
+    "XAG" -> rates.XAG // Code for XAG
+    "XAU" -> rates.XAU // Code for XAU
+    "XCD" -> rates.XCD // Code for XCD
+    "XDR" -> rates.XDR // Code for XDR
+    "XOF" -> rates.XOF // Code for XOF
+    "XPD" -> rates.XPD // Code for XPD
+    "XPF" -> rates.XPF // Code for XPF
+    "XPT" -> rates.XPT // Code for XPT
+    "YER" -> rates.YER // Code for YER
+    "ZAR" -> rates.ZAR // Code for ZAR
+    "ZMW" -> rates.ZMW // Code for ZMW
+    "ZWL" -> rates.ZWL // Code for ZWL
     else -> "0.0"
 }
 
-fun getConvertedRate(rates: Rates, from: String, to: String): Double = (1.0/(getRateForCurrency(from, rates)).toDouble()) * getRateForCurrency(to, rates).toDouble()
+fun unitConvertedRate(rates: Rates, from: String, to: String): Double = (1.0/(getRateForCurrency(from, rates)).toDouble()) * getRateForCurrency(to, rates).toDouble()
 
 fun getRatesAsList(rates: Rates, amount: Double = 1.0, from: String): MutableList<CurrencyRateItem> {
     if (from.isEmpty()) return mutableListOf()
     return mutableListOf(
         CurrencyRateItem(
             currency = "CAD",
-            value = (amount * getConvertedRate(rates, from, "CAD")).to3decimalPoint()
+            value = (amount * unitConvertedRate(rates, from, "CAD")).to3decimalPoint()
         ),
-        CurrencyRateItem(currency = "BDT", value = (amount * getConvertedRate(rates, from, "BDT")).to3decimalPoint()),
-        CurrencyRateItem(currency = "EUR", value = (amount * getConvertedRate(rates, from, "EUR")).to3decimalPoint()),
-        CurrencyRateItem(currency = "KWD", value = (amount * getConvertedRate(rates, from, "KWD")).to3decimalPoint()),
-        CurrencyRateItem(currency = "JPY", value = (amount * getConvertedRate(rates, from, "JPY")).to3decimalPoint()),
-        CurrencyRateItem(currency = "CNH", value = (amount * getConvertedRate(rates, from, "CNH")).to3decimalPoint()),
-        CurrencyRateItem(currency = "USD", value = (amount * getConvertedRate(rates, from, "USD")).to3decimalPoint()),
-        CurrencyRateItem(currency = "BTC", value = (amount * getConvertedRate(rates, from, "BTC")).to3decimalPoint()),
-        CurrencyRateItem(currency = "GBP", value = (amount * getConvertedRate(rates, from, "GBP")).to3decimalPoint()),
-        CurrencyRateItem(currency = "SGD", value = (amount * getConvertedRate(rates, from, "SGD")).to3decimalPoint()),
-        CurrencyRateItem(currency = "INR", value = (amount * getConvertedRate(rates, from, "INR")).to3decimalPoint()),
-        CurrencyRateItem(currency = "AUD", value = (amount * getConvertedRate(rates, from, "AUD")).to3decimalPoint()),
-        CurrencyRateItem(currency = "NZD", value = (amount * getConvertedRate(rates, from, "NZD")).to3decimalPoint()),
-        CurrencyRateItem(currency = "CZK", value = (amount * getConvertedRate(rates, from, "CZK")).to3decimalPoint()),
-        CurrencyRateItem(currency = "RON", value = (amount * getConvertedRate(rates, from, "RON")).to3decimalPoint()),
-        CurrencyRateItem(currency = "PHP", value = (amount * getConvertedRate(rates, from, "PHP")).to3decimalPoint()),
-        CurrencyRateItem(currency = "HKD", value = (amount * getConvertedRate(rates, from, "HKD")).to3decimalPoint()),
-        CurrencyRateItem(currency = "ISK", value = (amount * getConvertedRate(rates, from, "ISK")).to3decimalPoint()),
-        CurrencyRateItem(currency = "DKK", value = (amount * getConvertedRate(rates, from, "DKK")).to3decimalPoint()),
-        CurrencyRateItem(currency = "SEK", value = (amount * getConvertedRate(rates, from, "SEK")).to3decimalPoint()),
-        CurrencyRateItem(currency = "XPF", value = (amount * getConvertedRate(rates, from, "XPF")).to3decimalPoint()),
-        CurrencyRateItem(currency = "XPT", value = (amount * getConvertedRate(rates, from, "XPT")).to3decimalPoint())
+        CurrencyRateItem(currency = "BDT", value = (amount * unitConvertedRate(rates, from, "BDT")).to3decimalPoint()),
+        CurrencyRateItem(currency = "EUR", value = (amount * unitConvertedRate(rates, from, "EUR")).to3decimalPoint()),
+        CurrencyRateItem(currency = "KWD", value = (amount * unitConvertedRate(rates, from, "KWD")).to3decimalPoint()),
+        CurrencyRateItem(currency = "JPY", value = (amount * unitConvertedRate(rates, from, "JPY")).to3decimalPoint()),
+        CurrencyRateItem(currency = "CNH", value = (amount * unitConvertedRate(rates, from, "CNH")).to3decimalPoint()),
+        CurrencyRateItem(currency = "USD", value = (amount * unitConvertedRate(rates, from, "USD")).to3decimalPoint()),
+        CurrencyRateItem(currency = "BTC", value = (amount * unitConvertedRate(rates, from, "BTC")).to3decimalPoint()),
+        CurrencyRateItem(currency = "GBP", value = (amount * unitConvertedRate(rates, from, "GBP")).to3decimalPoint()),
+        CurrencyRateItem(currency = "SGD", value = (amount * unitConvertedRate(rates, from, "SGD")).to3decimalPoint()),
+        CurrencyRateItem(currency = "INR", value = (amount * unitConvertedRate(rates, from, "INR")).to3decimalPoint()),
+        CurrencyRateItem(currency = "AUD", value = (amount * unitConvertedRate(rates, from, "AUD")).to3decimalPoint()),
+        CurrencyRateItem(currency = "NZD", value = (amount * unitConvertedRate(rates, from, "NZD")).to3decimalPoint()),
+        CurrencyRateItem(currency = "CZK", value = (amount * unitConvertedRate(rates, from, "CZK")).to3decimalPoint()),
+        CurrencyRateItem(currency = "RON", value = (amount * unitConvertedRate(rates, from, "RON")).to3decimalPoint()),
+        CurrencyRateItem(currency = "PHP", value = (amount * unitConvertedRate(rates, from, "PHP")).to3decimalPoint()),
+        CurrencyRateItem(currency = "HKD", value = (amount * unitConvertedRate(rates, from, "HKD")).to3decimalPoint()),
+        CurrencyRateItem(currency = "ISK", value = (amount * unitConvertedRate(rates, from, "ISK")).to3decimalPoint()),
+        CurrencyRateItem(currency = "DKK", value = (amount * unitConvertedRate(rates, from, "DKK")).to3decimalPoint()),
+        CurrencyRateItem(currency = "SEK", value = (amount * unitConvertedRate(rates, from, "SEK")).to3decimalPoint()),
+        CurrencyRateItem(currency = "XPF", value = (amount * unitConvertedRate(rates, from, "XPF")).to3decimalPoint()),
+        CurrencyRateItem(currency = "XPT", value = (amount * unitConvertedRate(rates, from, "XPT")).to3decimalPoint())
     )
 }
 
@@ -211,7 +217,7 @@ fun fetchRatesAsList(rates: Map<String, Any>, rateObj: Rates, amount: Double = 0
     rates.entries.forEach { rate -> ratesList.add(
         CurrencyRateItem(
             currency = rate.key,
-            value = (amount * getConvertedRate(rateObj, from, rate.key)).to3decimalPoint()
+            value = (amount * unitConvertedRate(rateObj, from, rate.key)).toString()
         )
     )
     }
